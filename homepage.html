@@ -1,0 +1,997 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2299.77">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="zh-TW"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1">&lt;title&gt;任務看板&lt;/title&gt;</p>
+<p class="p1">&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;</p>
+<p class="p1">&lt;link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&amp;family=Noto+Sans+TC:wght@300;400;500&amp;display=swap" rel="stylesheet"&gt;</p>
+<p class="p1">&lt;style&gt;</p>
+<p class="p1">:root{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--paper:#f5f0e8;--paper2:#ede8dc;--paper3:#e4ddd0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--ink:#2c2820;--ink2:#5a5245;--ink3:#9a8f82;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--border:#d4cbbf;--border2:#bfb5a8;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--done:#6b8f6b;--warn:#c17f3a;--danger:#b85450;--accent:#7a6652;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--sans:'Noto Sans TC',sans-serif;--serif:'Lora',serif;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--radius:8px;--radius-lg:14px;</p>
+<p class="p1">}</p>
+<p class="p1">*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}</p>
+<p class="p1">body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.65;min-height:100vh}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── 登入 ── */</p>
+<p class="p1">.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center}</p>
+<p class="p1">.login-box{width:360px;padding:48px 40px;background:var(--paper2);border:1px solid var(--border);border-radius:var(--radius-lg)}</p>
+<p class="p1">.login-title{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--ink);margin-bottom:6px}</p>
+<p class="p1">.login-sub{font-size:12px;color:var(--ink3);margin-bottom:32px}</p>
+<p class="p1">.login-label{font-size:11px;color:var(--ink2);margin-bottom:6px;display:block;letter-spacing:.05em}</p>
+<p class="p1">.login-select{width:100%;padding:10px 14px;background:var(--paper);border:1px solid var(--border2);border-radius:var(--radius);color:var(--ink);font-family:var(--sans);font-size:13px;outline:none;cursor:pointer;margin-bottom:20px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a8f82' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}</p>
+<p class="p1">.login-btn{width:100%;padding:11px;border:none;background:var(--accent);color:#f5f0e8;font-family:var(--sans);font-size:13px;font-weight:500;border-radius:var(--radius);cursor:pointer;transition:opacity .15s}</p>
+<p class="p1">.login-btn:hover{opacity:.85}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── App ── */</p>
+<p class="p1">.app{display:none;grid-template-rows:52px 1fr;height:100vh;overflow:hidden}</p>
+<p class="p1">.app.visible{display:grid}</p>
+<p class="p2"><br></p>
+<p class="p1">.topbar{display:flex;align-items:center;background:var(--paper2);border-bottom:1px solid var(--border);padding:0 24px;z-index:20}</p>
+<p class="p1">.topbar-brand{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--accent);margin-right:20px;white-space:nowrap}</p>
+<p class="p1">.topbar-sep{width:1px;height:18px;background:var(--border);margin:0 14px}</p>
+<p class="p1">.filter-bar{display:flex;gap:4px;flex:1}</p>
+<p class="p1">.filter-btn{font-size:12px;padding:4px 14px;border-radius:20px;border:1px solid transparent;background:transparent;color:var(--ink3);cursor:pointer;transition:all .15s}</p>
+<p class="p1">.filter-btn:hover{background:var(--paper3);color:var(--ink2)}</p>
+<p class="p1">.filter-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}</p>
+<p class="p1">.filter-btn.active-warn{background:var(--warn);color:#fff;border-color:var(--warn)}</p>
+<p class="p1">.filter-btn.active-done{background:var(--done);color:#fff;border-color:var(--done)}</p>
+<p class="p1">.filter-btn.active-danger{background:var(--danger);color:#fff;border-color:var(--danger)}</p>
+<p class="p1">.topbar-right{display:flex;gap:8px;margin-left:auto;align-items:center}</p>
+<p class="p1">.user-pill{display:flex;align-items:center;gap:8px;padding:4px 12px 4px 6px;background:var(--paper3);border:1px solid var(--border);border-radius:20px;cursor:pointer;transition:background .15s}</p>
+<p class="p1">.user-pill:hover{background:var(--border)}</p>
+<p class="p1">.user-avatar{width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--paper);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}</p>
+<p class="p1">.user-name{font-size:12px;color:var(--ink2)}</p>
+<p class="p1">.nav-link{font-size:12px;padding:5px 14px;border-radius:var(--radius);border:1px solid var(--border);background:transparent;color:var(--ink2);text-decoration:none;transition:all .15s}</p>
+<p class="p1">.nav-link:hover{border-color:var(--border2);color:var(--ink)}</p>
+<p class="p1">.btn-primary{font-size:12px;padding:6px 16px;border-radius:var(--radius);border:1px solid var(--accent);background:var(--accent);color:var(--paper);cursor:pointer;transition:opacity .15s}</p>
+<p class="p1">.btn-primary:hover{opacity:.85}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── Main ── */</p>
+<p class="p1">.main{display:grid;grid-template-columns:200px 1fr;overflow:hidden}</p>
+<p class="p1">.sidebar{background:var(--paper2);border-right:1px solid var(--border);overflow-y:auto;padding:20px 0}</p>
+<p class="p1">.sidebar-section{margin-bottom:24px}</p>
+<p class="p1">.sidebar-label{font-size:10px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;padding:0 18px 8px}</p>
+<p class="p1">.member-item{display:flex;align-items:center;gap:9px;padding:7px 18px;cursor:pointer;border-left:2px solid transparent;transition:all .1s}</p>
+<p class="p1">.member-item:hover{background:var(--paper3)}</p>
+<p class="p1">.member-item.active{background:var(--paper3);border-left-color:var(--accent)}</p>
+<p class="p1">.m-avatar{width:26px;height:26px;border-radius:50%;background:var(--paper3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--ink2);flex-shrink:0}</p>
+<p class="p1">.member-item.active .m-avatar{background:var(--accent);color:var(--paper);border-color:var(--accent)}</p>
+<p class="p1">.m-name{font-size:13px;color:var(--ink);flex:1}</p>
+<p class="p1">.m-count{font-size:10px;color:var(--ink3)}</p>
+<p class="p1">.m-dot{width:5px;height:5px;border-radius:50%;background:var(--danger);flex-shrink:0}</p>
+<p class="p1">.sidebar-divider{height:1px;background:var(--border);margin:4px 18px 20px}</p>
+<p class="p1">.sidebar-action{display:flex;align-items:center;gap:8px;padding:7px 18px;cursor:pointer;font-size:12px;color:var(--ink3);transition:all .1s;border-left:2px solid transparent}</p>
+<p class="p1">.sidebar-action:hover{background:var(--paper3);color:var(--ink2)}</p>
+<p class="p1">.sidebar-action.active{background:var(--paper3);border-left-color:var(--accent);color:var(--ink)}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── 任務區 ── */</p>
+<p class="p1">.task-area{overflow-y:auto;padding:28px 32px;display:flex;flex-direction:column;gap:24px}</p>
+<p class="p1">.section-hd{display:flex;align-items:center;gap:12px;margin-bottom:10px}</p>
+<p class="p1">.section-title{font-size:11px;letter-spacing:.1em;color:var(--ink3);text-transform:uppercase}</p>
+<p class="p1">.section-line{flex:1;height:1px;background:var(--border)}</p>
+<p class="p1">.section-count{font-size:10px;color:var(--ink3)}</p>
+<p class="p1">.section-action{font-size:11px;color:var(--danger);cursor:pointer;padding:2px 8px;border-radius:4px;border:1px solid transparent;transition:all .15s}</p>
+<p class="p1">.section-action:hover{border-color:var(--danger);background:rgba(184,84,80,.06)}</p>
+<p class="p2"><br></p>
+<p class="p1">.task-list{display:flex;flex-direction:column;gap:5px}</p>
+<p class="p1">.task-card{background:var(--paper2);border:1px solid var(--border);border-radius:var(--radius);padding:13px 16px;display:grid;grid-template-columns:22px 1fr auto;gap:12px;align-items:start;transition:border-color .15s,box-shadow .15s;position:relative;overflow:hidden}</p>
+<p class="p1">.task-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--border2)}</p>
+<p class="p1">.task-card:hover{border-color:var(--border2);box-shadow:0 1px 6px rgba(44,40,32,.06)}</p>
+<p class="p1">.task-card.overdue::before{background:var(--danger)}</p>
+<p class="p1">.task-card.overdue{border-color:#ddc8c8}</p>
+<p class="p1">.task-card.done{opacity:.5}</p>
+<p class="p1">.task-card.done::before{background:var(--done)}</p>
+<p class="p1">.task-card.creator-view::before{background:var(--warn);opacity:.5}</p>
+<p class="p2"><br></p>
+<p class="p1">.task-check{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border2);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}</p>
+<p class="p1">.task-check:hover{border-color:var(--done);background:rgba(107,143,107,.1)}</p>
+<p class="p1">.task-card.done .task-check{background:var(--done);border-color:var(--done)}</p>
+<p class="p1">.tick{display:none}</p>
+<p class="p1">.task-card.done .tick{display:block}</p>
+<p class="p2"><br></p>
+<p class="p1">.task-body{min-width:0}</p>
+<p class="p1">.task-title{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:5px;cursor:pointer;transition:color .1s}</p>
+<p class="p1">.task-title:hover{color:var(--accent)}</p>
+<p class="p1">.task-card.done .task-title{text-decoration:line-through;color:var(--ink3)}</p>
+<p class="p1">.task-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}</p>
+<p class="p1">.tag{font-size:10px;padding:2px 8px;border-radius:4px;letter-spacing:.03em}</p>
+<p class="p1">.tag-assignee{background:rgba(122,102,82,.1);color:var(--accent);cursor:pointer}</p>
+<p class="p1">.tag-assignee:hover{background:rgba(122,102,82,.18)}</p>
+<p class="p1">.tag-deadline{background:rgba(154,143,130,.12);color:var(--ink3)}</p>
+<p class="p1">.tag-overdue{background:rgba(184,84,80,.1);color:var(--danger)}</p>
+<p class="p1">.tag-creator{background:rgba(154,143,130,.1);color:var(--ink3)}</p>
+<p class="p1">.tag-source{background:rgba(154,143,130,.08);color:var(--border2);font-size:9px}</p>
+<p class="p1">.tag-rule{background:rgba(107,143,107,.1);color:var(--done);font-size:9px}</p>
+<p class="p1">.tag-recur{background:rgba(122,102,82,.08);color:var(--accent);font-size:9px}</p>
+<p class="p2"><br></p>
+<p class="p1">.task-actions{display:flex;gap:3px}</p>
+<p class="p1">.icon-btn{width:26px;height:26px;border-radius:6px;border:1px solid transparent;background:transparent;color:var(--ink3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}</p>
+<p class="p1">.icon-btn:hover{background:var(--paper3);border-color:var(--border);color:var(--ink2)}</p>
+<p class="p1">.icon-btn.del:hover{background:rgba(184,84,80,.08);color:var(--danger);border-color:#ddc8c8}</p>
+<p class="p2"><br></p>
+<p class="p1">.empty{padding:32px 0;text-align:center;font-size:12px;color:var(--ink3);font-style:italic}</p>
+<p class="p1">.loading{display:flex;align-items:center;gap:8px;padding:40px 0;justify-content:center;color:var(--ink3);font-size:12px;font-style:italic}</p>
+<p class="p1">.spinner{width:14px;height:14px;border:1.5px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}</p>
+<p class="p1">@keyframes spin{to{transform:rotate(360deg)}}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── 設定面板 ── */</p>
+<p class="p1">.settings-panel{padding:28px 32px;overflow-y:auto}</p>
+<p class="p1">.settings-title{font-family:var(--serif);font-size:16px;font-weight:400;color:var(--ink);margin-bottom:4px}</p>
+<p class="p1">.settings-sub{font-size:12px;color:var(--ink3);margin-bottom:20px}</p>
+<p class="p1">.rule-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}</p>
+<p class="p1">.rule-item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--paper2);border:1px solid var(--border);border-radius:var(--radius)}</p>
+<p class="p1">.rule-dot{width:8px;height:8px;border-radius:50%;background:var(--done);flex-shrink:0}</p>
+<p class="p1">.rule-dot.inactive{background:var(--border2)}</p>
+<p class="p1">.rule-info{flex:1;min-width:0}</p>
+<p class="p1">.rule-name{font-size:13px;color:var(--ink);font-weight:500}</p>
+<p class="p1">.rule-detail{font-size:11px;color:var(--ink3)}</p>
+<p class="p1">.rule-actions{display:flex;gap:4px}</p>
+<p class="p1">.sheets-config{background:var(--paper2);border:1px solid var(--border);border-radius:var(--radius);padding:20px}</p>
+<p class="p1">.config-row{display:grid;grid-template-columns:140px 1fr;gap:12px;align-items:center;margin-bottom:12px}</p>
+<p class="p1">.config-label{font-size:12px;color:var(--ink2)}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── Modal ── */</p>
+<p class="p1">.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(44,40,32,.45);z-index:100;align-items:center;justify-content:center}</p>
+<p class="p1">.modal-backdrop.open{display:flex}</p>
+<p class="p1">.modal{background:var(--paper);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:28px;width:500px;max-width:95vw;animation:fadeUp .18s ease;max-height:90vh;overflow-y:auto}</p>
+<p class="p1">@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}</p>
+<p class="p1">.modal-title{font-family:var(--serif);font-size:17px;font-weight:400;color:var(--ink);margin-bottom:20px}</p>
+<p class="p1">.form-row{margin-bottom:14px}</p>
+<p class="p1">.form-label{font-size:11px;color:var(--ink2);letter-spacing:.05em;margin-bottom:5px;display:block}</p>
+<p class="p1">.form-input,.form-select,.form-textarea{width:100%;background:var(--paper2);border:1px solid var(--border2);border-radius:var(--radius);padding:9px 12px;color:var(--ink);font-family:var(--sans);font-size:13px;outline:none;transition:border-color .15s}</p>
+<p class="p1">.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent)}</p>
+<p class="p1">.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a8f82' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}</p>
+<p class="p1">.form-select option{background:var(--paper2)}</p>
+<p class="p1">.form-textarea{resize:vertical;min-height:68px}</p>
+<p class="p1">.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}</p>
+<p class="p1">.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}</p>
+<p class="p1">.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}</p>
+<p class="p1">.btn-cancel{font-size:12px;padding:8px 18px;border-radius:var(--radius);border:1px solid var(--border2);background:transparent;color:var(--ink2);cursor:pointer;transition:all .15s}</p>
+<p class="p1">.btn-cancel:hover{color:var(--ink);background:var(--paper2)}</p>
+<p class="p1">.btn-submit{font-size:12px;padding:8px 20px;border-radius:var(--radius);border:none;background:var(--accent);color:var(--paper);cursor:pointer;font-weight:500;transition:opacity .15s}</p>
+<p class="p1">.btn-submit:hover{opacity:.85}</p>
+<p class="p1">.btn-submit:disabled{opacity:.45;cursor:not-allowed}</p>
+<p class="p2"><br></p>
+<p class="p1">/* 例行任務切換 */</p>
+<p class="p1">.recur-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--paper2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:14px;cursor:pointer;user-select:none;transition:border-color .15s}</p>
+<p class="p1">.recur-toggle-row:hover{border-color:var(--border2)}</p>
+<p class="p1">.recur-toggle-label{font-size:13px;color:var(--ink2)}</p>
+<p class="p1">.toggle-switch{position:relative;width:36px;height:20px}</p>
+<p class="p1">.toggle-switch input{opacity:0;width:0;height:0;position:absolute}</p>
+<p class="p1">.toggle-track{position:absolute;inset:0;background:var(--border2);border-radius:10px;transition:background .2s;cursor:pointer}</p>
+<p class="p1">.toggle-track::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:white;top:3px;left:3px;transition:transform .2s}</p>
+<p class="p1">.toggle-switch input:checked+.toggle-track{background:var(--accent)}</p>
+<p class="p1">.toggle-switch input:checked+.toggle-track::after{transform:translateX(16px)}</p>
+<p class="p2"><br></p>
+<p class="p1">.recur-options{background:var(--paper2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px;display:none}</p>
+<p class="p1">.recur-options.visible{display:block}</p>
+<p class="p2"><br></p>
+<p class="p1">/* 星期選擇 */</p>
+<p class="p1">.weekday-checks{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}</p>
+<p class="p1">.weekday-btn{font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--ink3);cursor:pointer;transition:all .15s}</p>
+<p class="p1">.weekday-btn.selected{background:var(--accent);border-color:var(--accent);color:var(--paper)}</p>
+<p class="p2"><br></p>
+<p class="p1">/* 多選成員 */</p>
+<p class="p1">.member-checks{display:flex;flex-direction:column;gap:4px;max-height:160px;overflow-y:auto}</p>
+<p class="p1">.check-item{display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:var(--radius);cursor:pointer;border:1px solid transparent;transition:all .1s}</p>
+<p class="p1">.check-item:hover{background:var(--paper2);border-color:var(--border)}</p>
+<p class="p1">.check-item.checked{border-color:var(--accent);background:rgba(122,102,82,.06)}</p>
+<p class="p1">.check-item input[type=checkbox]{accent-color:var(--accent);width:13px;height:13px}</p>
+<p class="p1">.check-name{font-size:13px;color:var(--ink)}</p>
+<p class="p1">.check-id{font-size:10px;color:var(--ink3);margin-left:auto}</p>
+<p class="p2"><br></p>
+<p class="p1">.toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:var(--paper);border-radius:var(--radius);padding:10px 16px;font-size:12px;z-index:200;transform:translateY(12px);opacity:0;transition:all .2s;pointer-events:none}</p>
+<p class="p1">.toast.show{transform:translateY(0);opacity:1}</p>
+<p class="p1">.toast.ok{background:var(--done)}</p>
+<p class="p1">.toast.err{background:var(--danger)}</p>
+<p class="p1">&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="login-screen" id="login-screen"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="login-box"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="login-title"&gt;任務看板&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="login-sub"&gt;請選擇你的帳號&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;label class="login-label"&gt;我是&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;select class="login-select" id="login-select"&gt;&lt;option value=""&gt;載入中...&lt;/option&gt;&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="login-btn" onclick="doLogin()"&gt;進入看板&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="app" id="app"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;header class="topbar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;span class="topbar-brand"&gt;taskboard&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="topbar-sep"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="filter-bar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="filter-btn active" onclick="setFilter('all',this)"&gt;全部&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="filter-btn" onclick="setFilter('todo',this)"&gt;待辦&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="filter-btn" onclick="setFilter('overdue',this)"&gt;逾期&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="filter-btn" onclick="setFilter('done',this)"&gt;已完成&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="topbar-right"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="https://sites.google.com/philovending.com/task/%E6%AF%8F%E9%80%B1%E7%B5%90%E7%AE%97?authuser=0" class="nav-link" id="weekly-link"&gt;週結算&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn-primary" onclick="openNewModal()"&gt;＋ 新增任務&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="user-pill" onclick="logout()" title="點擊登出"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="user-avatar" id="user-avatar"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;span class="user-name" id="user-name"&gt;&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="main"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;aside class="sidebar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="sidebar-section"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sidebar-label"&gt;視角&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="member-item active" id="view-mine" onclick="setView('mine')"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="m-avatar" id="view-mine-av"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="m-name"&gt;我的任務&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="member-item" id="view-all" onclick="setView('all')"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="m-avatar" style="font-size:9px"&gt;全&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="m-name"&gt;所有成員&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="sidebar-section" id="member-section" style="display:none"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sidebar-label"&gt;成員&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="member-list"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="sidebar-divider"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="sidebar-section"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sidebar-label"&gt;設定&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sidebar-action" id="nav-recurrence" onclick="showPanel('recurrence')"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;span style="font-size:13px"&gt;↻&lt;/span&gt; 例行任務設定</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sidebar-action" id="nav-rules" onclick="showPanel('rules')"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;span style="font-size:13px"&gt;◷&lt;/span&gt; 別理我</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sidebar-action" id="nav-sheets" onclick="showPanel('sheets')"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;span style="font-size:13px"&gt;⊞&lt;/span&gt; 串接 Google Sheets</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/aside&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;main class="task-area" id="task-area"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="loading"&gt;&lt;div class="spinner"&gt;&lt;/div&gt; 載入中&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/main&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;section class="settings-panel" id="settings-panel" style="display:none"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 例行任務管理 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="panel-recurrence"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="settings-title"&gt;例行任務&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="settings-sub"&gt;定期自動建立的任務，可設定每天、每週幾或每月幾號重複，並指定提前幾天建立。&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="rule-list" id="recurrence-list"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn-primary" onclick="openRecurModal()"&gt;＋ 新增例行任務&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 別理我 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="panel-rules" style="display:none"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="settings-title"&gt;固定規則&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="settings-sub"&gt;每月自動建立的任務。&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="rule-list" id="rule-list"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn-primary" onclick="openRuleModal()"&gt;＋ 新增規則&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 串接 Google Sheets --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="panel-sheets" style="display:none"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="settings-title"&gt;來源 Sheets 串接&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="settings-sub"&gt;指定要自動匯入任務的 Google Sheets，每天 08:00 自動掃描新列。&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sheets-config"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="config-row"&gt;&lt;span class="config-label"&gt;Sheets ID&lt;/span&gt;&lt;input class="form-input" id="cfg-sheet-id" placeholder="網址中間那串 ID"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="config-row"&gt;&lt;span class="config-label"&gt;工作表名稱&lt;/span&gt;&lt;input class="form-input" id="cfg-sheet-name" placeholder="Sheet1"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style="text-align:right;margin-top:8px"&gt;&lt;button class="btn-primary" onclick="saveSheetConfig()"&gt;儲存設定&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style="margin-top:12px"&gt;&lt;button class="btn-cancel" style="width:100%;text-align:center" onclick="triggerImport()"&gt;立即匯入一次&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/section&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- 新增/編輯任務 Modal --&gt;</p>
+<p class="p1">&lt;div class="modal-backdrop" id="modal-task" onclick="if(event.target===this)closeTaskModal()"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="modal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-title" id="task-modal-title"&gt;新增任務&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- 例行任務切換 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="recur-toggle-row" onclick="toggleRecurMode()" id="recur-toggle-row"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="recur-toggle-label"&gt;↻ 例行任務&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;label class="toggle-switch" onclick="event.stopPropagation()"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;input type="checkbox" id="recur-toggle" onchange="toggleRecurMode()"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="toggle-track"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- 例行任務選項 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="recur-options" id="recur-options"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="form-row-2" style="margin-bottom:12px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="form-label"&gt;重複頻率&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;select class="form-select" id="r-freq" onchange="onFreqChange()"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;option value="daily"&gt;每天&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;option value="weekly" selected&gt;每週&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;option value="monthly"&gt;每月&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="form-label" id="r-interval-label"&gt;每幾週重複&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input class="form-input" id="r-interval" type="number" min="1" max="12" value="1" placeholder="1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 每週：選星期 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="r-weekdays-row" class="form-row" style="margin-bottom:12px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="form-label"&gt;在哪幾天&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="weekday-checks"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button type="button" class="weekday-btn" data-day="1" onclick="toggleWeekday(this)"&gt;一&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button type="button" class="weekday-btn" data-day="2" onclick="toggleWeekday(this)"&gt;二&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button type="button" class="weekday-btn" data-day="3" onclick="toggleWeekday(this)"&gt;三&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button type="button" class="weekday-btn" data-day="4" onclick="toggleWeekday(this)"&gt;四&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button type="button" class="weekday-btn" data-day="5" onclick="toggleWeekday(this)"&gt;五&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button type="button" class="weekday-btn" data-day="6" onclick="toggleWeekday(this)"&gt;六&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button type="button" class="weekday-btn" data-day="0" onclick="toggleWeekday(this)"&gt;日&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 每月：選幾號 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="r-monthday-row" class="form-row" style="margin-bottom:12px;display:none"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="form-label"&gt;每月幾號&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;input class="form-input" id="r-month-day" type="number" min="1" max="28" placeholder="例如：10"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 提前幾天建立 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="form-row" style="margin-bottom:0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="form-label"&gt;提前幾天建立任務&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style="display:flex;align-items:center;gap:8px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input class="form-input" id="r-lead" type="number" min="0" max="30" value="0" style="width:80px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;span style="font-size:12px;color:var(--ink3)"&gt;天前建立（0 = 當天建立）&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- 一般死線（非例行） --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="deadline-options"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="form-row-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="form-label"&gt;死線類型 *&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;select class="form-select" id="f-dtype" onchange="onDtypeChange()"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;option value="days_after_create"&gt;建立後幾天&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;option value="fixed_date"&gt;每月固定日&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;option value="custom"&gt;自訂日期&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="form-label" id="f-dval-label"&gt;幾天後 *&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input class="form-input" id="f-dval" placeholder="例如：3" type="number" min="1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="form-row" style="margin-top:14px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;label class="form-label"&gt;標題 *&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;input class="form-input" id="f-title" placeholder="輸入任務名稱"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="form-row"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;label class="form-label"&gt;說明&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;textarea class="form-textarea" id="f-desc" placeholder="選填"&gt;&lt;/textarea&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="form-row-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="form-label"&gt;指派給 *（可多選）&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="member-checks" id="f-assignee-checks"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="form-label"&gt;建立者&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;select class="form-select" id="f-creator"&gt;&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-footer"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn-cancel" onclick="closeTaskModal()"&gt;取消&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn-submit" id="task-submit-btn" onclick="submitTask()"&gt;建立任務&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- 指派 Modal --&gt;</p>
+<p class="p1">&lt;div class="modal-backdrop" id="modal-reassign" onclick="if(event.target===this)closeReassignModal()"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="modal" style="width:380px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-title"&gt;重新指派&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="reassign-task-name" style="font-size:12px;color:var(--ink3);margin-bottom:14px"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="form-label" style="margin-bottom:6px"&gt;指派給（可多選）&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="member-checks" id="reassign-checks"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-footer"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn-cancel" onclick="closeReassignModal()"&gt;取消&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn-submit" id="reassign-btn" onclick="submitReassign()"&gt;確認&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- 固定規則 Modal --&gt;</p>
+<p class="p1">&lt;div class="modal-backdrop" id="modal-rule" onclick="if(event.target===this)closeRuleModal()"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="modal" style="width:420px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-title" id="rule-modal-title"&gt;新增固定規則&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;input type="hidden" id="rl-id"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="form-row"&gt;&lt;label class="form-label"&gt;規則名稱 *&lt;/label&gt;&lt;input class="form-input" id="rl-name" placeholder="例如：每月結算"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="form-row"&gt;&lt;label class="form-label"&gt;任務標題模板 *&lt;/label&gt;&lt;input class="form-input" id="rl-title" placeholder="例如：本月結算任務"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="form-row-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;&lt;label class="form-label"&gt;每月幾號 *&lt;/label&gt;&lt;input class="form-input" id="rl-day" type="number" min="1" max="28" placeholder="1–28"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;&lt;label class="form-label"&gt;狀態&lt;/label&gt;&lt;select class="form-select" id="rl-active"&gt;&lt;option value="TRUE"&gt;啟用&lt;/option&gt;&lt;option value="FALSE"&gt;停用&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="form-row"&gt;&lt;label class="form-label"&gt;指派給 *&lt;/label&gt;&lt;div class="member-checks" id="rl-assignee-checks"&gt;&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-footer"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn-cancel" onclick="closeRuleModal()"&gt;取消&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn-submit" id="rule-submit-btn" onclick="submitRule()"&gt;儲存&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- 例行任務設定 Modal（從設定面板開啟） --&gt;</p>
+<p class="p1">&lt;div class="modal-backdrop" id="modal-recur" onclick="if(event.target===this)closeRecurModal()"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="modal" style="width:460px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-title" id="recur-modal-title"&gt;新增例行任務&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;input type="hidden" id="rec-id"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="form-row"&gt;&lt;label class="form-label"&gt;任務標題 *&lt;/label&gt;&lt;input class="form-input" id="rec-title" placeholder="任務名稱"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="form-row"&gt;&lt;label class="form-label"&gt;說明&lt;/label&gt;&lt;textarea class="form-textarea" id="rec-desc" placeholder="選填" style="min-height:52px"&gt;&lt;/textarea&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="form-row-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="form-label"&gt;重複頻率&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;select class="form-select" id="rec-freq" onchange="onRecFreqChange()"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value="daily"&gt;每天&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value="weekly" selected&gt;每週&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value="monthly"&gt;每月&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="form-label" id="rec-interval-label"&gt;每幾週&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;input class="form-input" id="rec-interval" type="number" min="1" max="12" value="1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="rec-weekdays-row" class="form-row"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;label class="form-label"&gt;在哪幾天&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="weekday-checks"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button type="button" class="weekday-btn" data-rday="1" onclick="toggleRWeekday(this)"&gt;一&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button type="button" class="weekday-btn" data-rday="2" onclick="toggleRWeekday(this)"&gt;二&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button type="button" class="weekday-btn" data-rday="3" onclick="toggleRWeekday(this)"&gt;三&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button type="button" class="weekday-btn" data-rday="4" onclick="toggleRWeekday(this)"&gt;四&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button type="button" class="weekday-btn" data-rday="5" onclick="toggleRWeekday(this)"&gt;五&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button type="button" class="weekday-btn" data-rday="6" onclick="toggleRWeekday(this)"&gt;六&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button type="button" class="weekday-btn" data-rday="0" onclick="toggleRWeekday(this)"&gt;日&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="rec-monthday-row" class="form-row" style="display:none"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;label class="form-label"&gt;每月幾號&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;input class="form-input" id="rec-month-day" type="number" min="1" max="28" placeholder="例如：10"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="form-row-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="form-label"&gt;提前幾天建立&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;input class="form-input" id="rec-lead" type="number" min="0" max="30" value="0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="form-label"&gt;狀態&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;select class="form-select" id="rec-active"&gt;&lt;option value="TRUE"&gt;啟用&lt;/option&gt;&lt;option value="FALSE"&gt;停用&lt;/option&gt;&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="form-row"&gt;&lt;label class="form-label"&gt;指派給 *&lt;/label&gt;&lt;div class="member-checks" id="rec-assignee-checks"&gt;&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-footer"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn-cancel" onclick="closeRecurModal()"&gt;取消&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn-submit" id="recur-submit-btn" onclick="submitRecurRule()"&gt;儲存&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="toast" id="toast"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1">const API='https://script.google.com/macros/s/AKfycbzACGknjRjp79Ly_JE-C7GFRaa23xjY7EI5JgWSU7dUauCIhGmXDpNnT6a4rjaVrGnvCg/exec';</p>
+<p class="p1">let allTasks=[],allMembers=[],allRules=[],allRecurrenceRules=[];</p>
+<p class="p1">let currentUser=null,viewMode='mine',activeMemberId='all',activeFilter='all';</p>
+<p class="p1">let editingTaskId=null,reassignTarget=null;</p>
+<p class="p2"><br></p>
+<p class="p1">// ── 登入 ─────────────────────────────────────────────────────</p>
+<p class="p1">async function bootLogin(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const r=await apiFetch('getMembers');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const members=r.members||[];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const sel=document.getElementById('login-select');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>sel.innerHTML='&lt;option value=""&gt;— 選擇 —&lt;/option&gt;'+members.map(m=&gt;`&lt;option value="${m.member_id}"&gt;${m.name}&lt;/option&gt;`).join('');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const saved=localStorage.getItem('taskboard_user');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(saved) sel.value=saved;</p>
+<p class="p1">}</p>
+<p class="p1">function doLogin(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const sel=document.getElementById('login-select');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!sel.value){toast('請選擇帳號','err');return}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>localStorage.setItem('taskboard_user',sel.value);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>startApp(sel.value);</p>
+<p class="p1">}</p>
+<p class="p1">async function startApp(memberId){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('login-screen').style.display='none';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('app').classList.add('visible');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>await Promise.all([loadMembers(),loadTasks(),loadRules(),loadRecurrenceRules()]);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>currentUser=allMembers.find(m=&gt;m.member_id===memberId);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!currentUser){logout();return}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('user-name').textContent=currentUser.name;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('user-avatar').textContent=currentUser.name.slice(-1);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('view-mine-av').textContent=currentUser.name.slice(-1);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('weekly-link').href=`https://sites.google.com/philovending.com/task/%E6%AF%8F%E9%80%B1%E7%B5%90%E7%AE%97?authuser=0`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>buildMemberUI();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>render();</p>
+<p class="p1">}</p>
+<p class="p1">function logout(){localStorage.removeItem('taskboard_user');location.reload()}</p>
+<p class="p2"><br></p>
+<p class="p1">// ── 資料 ─────────────────────────────────────────────────────</p>
+<p class="p1">async function loadMembers(){const r=await apiFetch('getMembers');allMembers=r.members||[]}</p>
+<p class="p1">async function loadTasks(){const r=await apiFetch('getTasks');allTasks=r.tasks||[]}</p>
+<p class="p1">async function loadRules(){const r=await apiFetch('getDeadlineRules');allRules=r.rules||[]}</p>
+<p class="p1">async function loadRecurrenceRules(){const r=await apiFetch('getRecurrenceRules');allRecurrenceRules=r.rules||[]}</p>
+<p class="p1">async function apiFetch(a,p={}){return(await fetch(`${API}?${new URLSearchParams({action:a,...p})}`)).json()}</p>
+<p class="p1">async function apiPost(b){return(await fetch(API,{method:'POST',body:JSON.stringify(b)})).json()}</p>
+<p class="p2"><br></p>
+<p class="p1">// ── 渲染 ─────────────────────────────────────────────────────</p>
+<p class="p1">function render(){renderSidebar();renderTasks()}</p>
+<p class="p2"><br></p>
+<p class="p1">function renderSidebar(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const pc={},oc={};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>allTasks.forEach(t=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>String(t.assigned_to).split(',').forEach(mid=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>mid=mid.trim();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if(t.status!=='done') pc[mid]=(pc[mid]||0)+1;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if(t.status==='overdue') oc[mid]=(oc[mid]||0)+1;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('member-list').innerHTML=allMembers.map(m=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const cnt=pc[m.member_id]||0,hasOD=(oc[m.member_id]||0)&gt;0;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return `&lt;div class="member-item" id="ml-${m.member_id}" onclick="selectMember('${m.member_id}')"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="m-avatar"&gt;${m.name.slice(-1)}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="m-name"&gt;${esc(m.name)}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>${hasOD?'&lt;div class="m-dot"&gt;&lt;/div&gt;':''}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="m-count"&gt;${cnt||''}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}).join('');</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function renderTasks(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('task-area').style.display='';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('settings-panel').style.display='none';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('.sidebar-action').forEach(el=&gt;el.classList.remove('active'));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>let tasks=allTasks;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(viewMode==='mine'){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>tasks=tasks.filter(t=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const a=String(t.assigned_to).split(',').map(s=&gt;s.trim());</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return a.includes(currentUser.member_id)||t.created_by===currentUser.member_id;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>} else if(activeMemberId!=='all'){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>tasks=tasks.filter(t=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const a=String(t.assigned_to).split(',').map(s=&gt;s.trim());</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return a.includes(activeMemberId)||t.created_by===activeMemberId;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const s={overdue:tasks.filter(t=&gt;t.status==='overdue'),todo:tasks.filter(t=&gt;t.status==='todo'),done:tasks.filter(t=&gt;t.status==='done')};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(activeFilter==='todo'){s.overdue=[];s.done=[]}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(activeFilter==='overdue'){s.todo=[];s.done=[]}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(activeFilter==='done'){s.overdue=[];s.todo=[]}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const area=document.getElementById('task-area'); area.innerHTML='';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>[{key:'overdue',label:'逾期',color:'var(--danger)'},{key:'todo',label:'待辦',color:'var(--ink3)'},{key:'done',label:'已完成',color:'var(--done)'}].forEach(({key,label,color})=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(activeFilter!=='all'&amp;&amp;activeFilter!==key) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const list=s[key],sec=document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const bulkBtn=key==='done'&amp;&amp;list.length?`&lt;span class="section-action" onclick="bulkDeleteDone()"&gt;全部刪除&lt;/span&gt;`:'';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>sec.innerHTML=`&lt;div class="section-hd"&gt;&lt;span class="section-title" style="color:${color}"&gt;${label}&lt;/span&gt;&lt;div class="section-line"&gt;&lt;/div&gt;${bulkBtn}&lt;span class="section-count"&gt;${list.length}&lt;/span&gt;&lt;/div&gt;&lt;div class="task-list"&gt;${list.length?list.map(cardHTML).join(''):'&lt;div class="empty"&gt;無任務&lt;/div&gt;'}&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>area.appendChild(sec);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function cardHTML(t){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const aIds=String(t.assigned_to).split(',').map(s=&gt;s.trim());</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const aNames=aIds.map(id=&gt;{const m=allMembers.find(m=&gt;m.member_id===id);return m?m.name:id});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const creator=allMembers.find(m=&gt;m.member_id===t.created_by);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const cName=creator?creator.name:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const isCreatorView=viewMode==='mine'&amp;&amp;!aIds.includes(currentUser.member_id)&amp;&amp;t.created_by===currentUser.member_id;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const dlTag=t.deadline_date?`&lt;span class="tag ${t.status==='overdue'?'tag-overdue':'tag-deadline'}"&gt;${t.status==='overdue'?'逾期 ':''}${t.deadline_date}&lt;/span&gt;`:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const srcTag=t.source==='rule'?`&lt;span class="tag tag-rule"&gt;規則&lt;/span&gt;`:t.source==='recurrence'?`&lt;span class="tag tag-recur"&gt;例行&lt;/span&gt;`:t.source!=='manual'?`&lt;span class="tag tag-source"&gt;${t.source}&lt;/span&gt;`:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const cTag=cName&amp;&amp;!aIds.includes(t.created_by)?`&lt;span class="tag tag-creator"&gt;by ${esc(cName)}&lt;/span&gt;`:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const aTags=aNames.map(n=&gt;`&lt;span class="tag tag-assignee" onclick="openReassign('${t.task_id}','${esc(String(t.assigned_to))}','${esc(t.title).replace(/'/g,"&amp;#39;")}')"&gt;${esc(n)}&lt;/span&gt;`).join('');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const titleEsc=esc(t.title).replace(/'/g,"&amp;#39;");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return `&lt;div class="task-card ${t.status}${isCreatorView?' creator-view':''}" id="card-${t.task_id}"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="task-check" onclick="toggleDone('${t.task_id}',${t.status==='done'})"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;svg class="tick" width="9" height="7" viewBox="0 0 9 7" fill="none"&gt;&lt;path d="M1 3.5L3 5.5L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="task-body"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="task-title" onclick="openEditModal('${t.task_id}')"&gt;${esc(t.title)}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="task-meta"&gt;${aTags}${dlTag}${cTag}${srcTag}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="task-actions"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="icon-btn" onclick="openReassign('${t.task_id}','${esc(String(t.assigned_to))}','${titleEsc}')" title="重新指派"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;svg width="12" height="12" viewBox="0 0 14 14" fill="none"&gt;&lt;path d="M9 2l3 3-3 3M2 5h10M5 12l-3-3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="icon-btn del" onclick="deleteTask('${t.task_id}')" title="刪除"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;svg width="12" height="12" viewBox="0 0 14 14" fill="none"&gt;&lt;path d="M2 3.5h10M5.5 3.5V2.5a1 1 0 011-1h1a1 1 0 011 1v1M6 6.5v4M8 6.5v4M3 3.5l.7 7.5a1 1 0 001 .9h4.6a1 1 0 001-.9L11 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;`;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// ── 操作 ─────────────────────────────────────────────────────</p>
+<p class="p1">function setView(mode){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>viewMode=mode; activeMemberId='all';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('view-mine').classList.toggle('active',mode==='mine');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('view-all').classList.toggle('active',mode==='all');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('member-section').style.display=mode==='all'?'':'none';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('#member-list .member-item').forEach(el=&gt;el.classList.remove('active'));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderTasks();</p>
+<p class="p1">}</p>
+<p class="p1">function selectMember(id){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>activeMemberId=id;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('#member-list .member-item').forEach(el=&gt;el.classList.remove('active'));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('ml-'+id)?.classList.add('active');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderTasks();</p>
+<p class="p1">}</p>
+<p class="p1">function setFilter(f,btn){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>activeFilter=f;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('.filter-btn').forEach(b=&gt;b.classList.remove('active','active-warn','active-done','active-danger'));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>btn.classList.add(f==='overdue'?'active-danger':f==='todo'?'active-warn':f==='done'?'active-done':'active');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderTasks();</p>
+<p class="p1">}</p>
+<p class="p1">async function toggleDone(id,isDone){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(isDone) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const card=document.getElementById(`card-${id}`);if(card)card.style.opacity='.4';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const r=await apiPost({action:'completeTask',task_id:id});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(r.ok){const t=allTasks.find(t=&gt;t.task_id===id);if(t){t.status='done';t.completed_at=new Date().toISOString()}render();toast('任務完成','ok')}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else{if(card)card.style.opacity='';toast('失敗：'+r.error,'err')}</p>
+<p class="p1">}</p>
+<p class="p1">async function deleteTask(id){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!confirm('確定刪除這個任務？')) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const r=await apiPost({action:'deleteTask',task_id:id});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(r.ok){allTasks=allTasks.filter(t=&gt;t.task_id!==id);render();toast('已刪除','ok')}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else toast('刪除失敗：'+r.error,'err');</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// ★ 批量刪除已完成</p>
+<p class="p1">async function bulkDeleteDone(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const doneIds=allTasks.filter(t=&gt;t.status==='done').map(t=&gt;t.task_id);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!doneIds.length) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!confirm(`確定刪除全部 ${doneIds.length} 筆已完成任務？`)) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const r=await apiPost({action:'deleteTasks',task_ids:doneIds});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(r.ok){allTasks=allTasks.filter(t=&gt;t.status!=='done');render();toast(`已刪除 ${r.deleted} 筆`,'ok')}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else toast('刪除失敗：'+r.error,'err');</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// ── 任務 Modal ────────────────────────────────────────────────</p>
+<p class="p1">function openNewModal(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>editingTaskId=null;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('task-modal-title').textContent='新增任務';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('task-submit-btn').textContent='建立任務';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('recur-toggle-row').style.display='';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>clearTaskForm();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('modal-task').classList.add('open');</p>
+<p class="p1">}</p>
+<p class="p1">function openEditModal(task_id){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const t=allTasks.find(t=&gt;t.task_id===task_id);if(!t) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>editingTaskId=task_id;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('task-modal-title').textContent='編輯任務';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('task-submit-btn').textContent='儲存變更';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('recur-toggle-row').style.display='none';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('recur-options').classList.remove('visible');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('deadline-options').style.display='';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-title').value=t.title;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-desc').value=t.description||'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-dtype').value=t.deadline_type||'days_after_create';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>onDtypeChange();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-dval').value=t.deadline_type==='custom'?t.deadline_date:t.deadline_value||'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const aIds=String(t.assigned_to).split(',').map(s=&gt;s.trim());</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('#f-assignee-checks input').forEach(cb=&gt;{cb.checked=aIds.includes(cb.value);updateCheckStyle('nl-'+cb.value,cb.checked)});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-creator').value=t.created_by||'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('modal-task').classList.add('open');</p>
+<p class="p1">}</p>
+<p class="p1">function closeTaskModal(){document.getElementById('modal-task').classList.remove('open');editingTaskId=null}</p>
+<p class="p2"><br></p>
+<p class="p1">// 例行任務切換</p>
+<p class="p1">function toggleRecurMode(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const cb=document.getElementById('recur-toggle');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// 如果點的是 row 本身（不是 checkbox），手動 toggle</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const isOn=cb.checked;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('recur-options').classList.toggle('visible',isOn);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('deadline-options').style.display=isOn?'none':'';</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function onFreqChange(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const freq=document.getElementById('r-freq').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('r-weekdays-row').style.display=freq==='weekly'?'':'none';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('r-monthday-row').style.display=freq==='monthly'?'':'none';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const label=document.getElementById('r-interval-label');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>label.textContent=freq==='daily'?'每幾天':freq==='weekly'?'每幾週':'每幾月';</p>
+<p class="p1">}</p>
+<p class="p1">function onRecFreqChange(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const freq=document.getElementById('rec-freq').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rec-weekdays-row').style.display=freq==='weekly'?'':'none';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rec-monthday-row').style.display=freq==='monthly'?'':'none';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rec-interval-label').textContent=freq==='daily'?'每幾天':freq==='weekly'?'每幾週':'每幾月';</p>
+<p class="p1">}</p>
+<p class="p1">function toggleWeekday(btn){btn.classList.toggle('selected')}</p>
+<p class="p1">function toggleRWeekday(btn){btn.classList.toggle('selected')}</p>
+<p class="p1">function getSelectedWeekdays(selector){return [...document.querySelectorAll(selector+'.selected')].map(b=&gt;b.dataset.day||b.dataset.rday).join(',')}</p>
+<p class="p2"><br></p>
+<p class="p1">function onDtypeChange(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const type=document.getElementById('f-dtype').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const label=document.getElementById('f-dval-label');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const input=document.getElementById('f-dval');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(type==='days_after_create'){label.textContent='幾天後 *';input.type='number';input.placeholder='例如：3'}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else if(type==='fixed_date'){label.textContent='每月幾號 *';input.type='number';input.placeholder='例如：10'}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else{label.textContent='指定日期 *';input.type='date';input.placeholder=''}</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">async function submitTask(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const title=document.getElementById('f-title').value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const desc=document.getElementById('f-desc').value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const assignees=[...document.querySelectorAll('#f-assignee-checks input:checked')].map(c=&gt;c.value);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const creator=document.getElementById('f-creator').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const isRecur=document.getElementById('recur-toggle').checked&amp;&amp;!editingTaskId;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!title||!assignees.length){toast('請填寫必填欄位','err');return}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const btn=document.getElementById('task-submit-btn');btn.disabled=true;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(isRecur){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 建立例行任務規則</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const freq=document.getElementById('r-freq').value;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const interval=document.getElementById('r-interval').value||1;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const lead=document.getElementById('r-lead').value||0;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const weekdays=getSelectedWeekdays('.weekday-checks .weekday-btn');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const monthDay=document.getElementById('r-month-day').value;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const r=await apiPost({action:'saveRecurrenceRule',title,description:desc,assigned_to:assignees,created_by:creator||currentUser.member_id,freq,interval,weekdays,month_day:monthDay,lead_days:lead,active:'TRUE'});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>btn.disabled=false;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(r.ok){await loadRecurrenceRules();closeTaskModal();toast('例行任務已建立','ok')}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>else toast('失敗：'+r.error,'err');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const dtype=document.getElementById('f-dtype').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const dval=document.getElementById('f-dval').value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!dval){toast('請填寫死線','err');btn.disabled=false;return}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>let r;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(editingTaskId){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>r=await apiPost({action:'updateTask',task_id:editingTaskId,title,description:desc,assigned_to:assignees,deadline_type:dtype,deadline_value:dval});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(r.ok){const t=allTasks.find(t=&gt;t.task_id===editingTaskId);if(t){t.title=title;t.description=desc;t.assigned_to=assignees.join(',');t.deadline_type=dtype;t.deadline_value=dval}}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>r=await apiPost({action:'createTask',title,description:desc,assigned_to:assignees,created_by:creator||currentUser.member_id,deadline_type:dtype,deadline_value:dval,source:'manual'});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(r.ok) await loadTasks();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>btn.disabled=false;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(r.ok){closeTaskModal();render();toast(editingTaskId?'任務已更新':'任務已建立','ok')}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else toast('失敗：'+r.error,'err');</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// ── 指派 Modal ────────────────────────────────────────────────</p>
+<p class="p1">function openReassign(task_id,currentIds,title){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>reassignTarget=task_id;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const selected=currentIds.split(',').map(s=&gt;s.trim());</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('reassign-task-name').textContent=title;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('reassign-checks').innerHTML=allMembers.map(m=&gt;`</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;label class="check-item ${selected.includes(m.member_id)?'checked':''}" id="rl2-${m.member_id}"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;input type="checkbox" value="${m.member_id}" ${selected.includes(m.member_id)?'checked':''} onchange="updateCheckStyle('rl2-${m.member_id}',this.checked)"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="m-avatar"&gt;${m.name.slice(-1)}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="check-name"&gt;${esc(m.name)}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/label&gt;`).join('');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('modal-reassign').classList.add('open');</p>
+<p class="p1">}</p>
+<p class="p1">function closeReassignModal(){document.getElementById('modal-reassign').classList.remove('open');reassignTarget=null}</p>
+<p class="p1">async function submitReassign(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const checks=[...document.querySelectorAll('#reassign-checks input:checked')].map(c=&gt;c.value);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!checks.length){toast('請選擇至少一位成員','err');return}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const btn=document.getElementById('reassign-btn');btn.disabled=true;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const r=await apiPost({action:'updateTask',task_id:reassignTarget,assigned_to:checks});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>btn.disabled=false;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(r.ok){const t=allTasks.find(t=&gt;t.task_id===reassignTarget);if(t)t.assigned_to=checks.join(',');closeReassignModal();render();toast('已重新指派','ok')}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else toast('失敗：'+r.error,'err');</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// ── 設定面板 ─────────────────────────────────────────────────</p>
+<p class="p1">function showPanel(name){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('task-area').style.display='none';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('settings-panel').style.display='';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>['recurrence','rules','sheets'].forEach(p=&gt;document.getElementById('panel-'+p).style.display=p===name?'':'none');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('.sidebar-action').forEach(el=&gt;el.classList.remove('active'));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('nav-'+name)?.classList.add('active');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(name==='recurrence') renderRecurrenceList();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(name==='rules') renderRuleList();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(name==='sheets') loadSheetConfig();</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// 例行任務列表</p>
+<p class="p1">function renderRecurrenceList(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const el=document.getElementById('recurrence-list');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!allRecurrenceRules.length){el.innerHTML='&lt;div class="empty"&gt;尚無例行任務規則&lt;/div&gt;';return}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const freqLabel={daily:'每天',weekly:'每週',monthly:'每月'};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el.innerHTML=allRecurrenceRules.map(r=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const aNames=String(r.assigned_to).split(',').map(id=&gt;{const m=allMembers.find(m=&gt;m.member_id===id);return m?m.name:id}).join('、');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const active=String(r.active).toUpperCase()==='TRUE';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let detail=freqLabel[r.freq]||r.freq;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(r.freq==='weekly'&amp;&amp;r.weekdays){const dayNames=['日','一','二','三','四','五','六'];detail+=' '+r.weekdays.split(',').map(d=&gt;dayNames[d]).join('/')}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(r.freq==='monthly'&amp;&amp;r.month_day) detail+=` ${r.month_day} 號`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(r.interval&amp;&amp;r.interval&gt;1) detail=`每 ${r.interval} ${r.freq==='daily'?'天':r.freq==='weekly'?'週':'月'}`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(r.lead_days&gt;0) detail+=`，提前 ${r.lead_days} 天建立`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return `&lt;div class="rule-item"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="rule-dot ${active?'':'inactive'}"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="rule-info"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="rule-name"&gt;${esc(r.title)}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="rule-detail"&gt;${detail}　→ ${esc(aNames)}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="rule-actions"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="icon-btn" onclick="openRecurModal('${r.recurrence_id}')" title="編輯"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;svg width="12" height="12" viewBox="0 0 14 14" fill="none"&gt;&lt;path d="M9.5 2.5l2 2L5 11H3v-2l6.5-6.5z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="icon-btn del" onclick="deleteRecurRule('${r.recurrence_id}')" title="刪除"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;svg width="12" height="12" viewBox="0 0 14 14" fill="none"&gt;&lt;path d="M2 3.5h10M5.5 3.5V2.5a1 1 0 011-1h1a1 1 0 011 1v1M6 6.5v4M8 6.5v4M3 3.5l.7 7.5a1 1 0 001 .9h4.6a1 1 0 001-.9L11 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}).join('');</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function openRecurModal(id){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rec-id').value=id||'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('recur-modal-title').textContent=id?'編輯例行任務':'新增例行任務';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(id){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const r=allRecurrenceRules.find(r=&gt;r.recurrence_id===id);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(r){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('rec-title').value=r.title;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('rec-desc').value=r.description||'';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('rec-freq').value=r.freq||'weekly';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('rec-interval').value=r.interval||1;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('rec-lead').value=r.lead_days||0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('rec-active').value=String(r.active).toUpperCase()==='TRUE'?'TRUE':'FALSE';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('rec-month-day').value=r.month_day||'';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>onRecFreqChange();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 星期</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const selected=(r.weekdays||'').split(',').map(s=&gt;s.trim());</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.querySelectorAll('[data-rday]').forEach(btn=&gt;{btn.classList.toggle('selected',selected.includes(btn.dataset.rday))});</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 指派</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const aIds=String(r.assigned_to).split(',').map(s=&gt;s.trim());</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.querySelectorAll('#rec-assignee-checks input').forEach(cb=&gt;{cb.checked=aIds.includes(cb.value);updateCheckStyle('ra-'+cb.value,cb.checked)});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>['rec-title','rec-desc','rec-month-day'].forEach(id=&gt;document.getElementById(id).value='');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('rec-freq').value='weekly';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('rec-interval').value=1;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('rec-lead').value=0;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('rec-active').value='TRUE';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.querySelectorAll('[data-rday]').forEach(btn=&gt;btn.classList.remove('selected'));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.querySelectorAll('#rec-assignee-checks input').forEach(cb=&gt;{cb.checked=false;updateCheckStyle('ra-'+cb.value,false)});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>onRecFreqChange();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('modal-recur').classList.add('open');</p>
+<p class="p1">}</p>
+<p class="p1">function closeRecurModal(){document.getElementById('modal-recur').classList.remove('open')}</p>
+<p class="p1">async function submitRecurRule(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const id=document.getElementById('rec-id').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const title=document.getElementById('rec-title').value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const freq=document.getElementById('rec-freq').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const assignees=[...document.querySelectorAll('#rec-assignee-checks input:checked')].map(c=&gt;c.value);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!title||!assignees.length){toast('請填寫必填欄位','err');return}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const weekdays=getSelectedWeekdays('[data-rday]');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const btn=document.getElementById('recur-submit-btn');btn.disabled=true;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const r=await apiPost({action:'saveRecurrenceRule',recurrence_id:id||undefined,title,description:document.getElementById('rec-desc').value.trim(),assigned_to:assignees,created_by:currentUser.member_id,freq,interval:document.getElementById('rec-interval').value||1,weekdays,month_day:document.getElementById('rec-month-day').value,lead_days:document.getElementById('rec-lead').value||0,active:document.getElementById('rec-active').value});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>btn.disabled=false;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(r.ok){await loadRecurrenceRules();closeRecurModal();renderRecurrenceList();toast('已儲存','ok')}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else toast('失敗：'+r.error,'err');</p>
+<p class="p1">}</p>
+<p class="p1">async function deleteRecurRule(id){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!confirm('確定刪除這條例行規則？（已建立的任務不受影響）')) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const r=await apiPost({action:'deleteRecurrenceRule',recurrence_id:id});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(r.ok){await loadRecurrenceRules();renderRecurrenceList();toast('已刪除','ok')}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else toast('失敗：'+r.error,'err');</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// 固定規則列表</p>
+<p class="p1">function renderRuleList(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const el=document.getElementById('rule-list');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!allRules.length){el.innerHTML='&lt;div class="empty"&gt;尚無固定規則&lt;/div&gt;';return}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el.innerHTML=allRules.map(r=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const aNames=String(r.assigned_to).split(',').map(id=&gt;{const m=allMembers.find(m=&gt;m.member_id===id);return m?m.name:id}).join('、');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const active=String(r.active).toUpperCase()==='TRUE';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return `&lt;div class="rule-item"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="rule-dot ${active?'':'inactive'}"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="rule-info"&gt;&lt;div class="rule-name"&gt;${esc(r.rule_name)}&lt;/div&gt;&lt;div class="rule-detail"&gt;每月 ${r.value} 號　${esc(r.title_template)}　→ ${esc(aNames)}&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="rule-actions"&gt;&lt;button class="icon-btn" onclick="openRuleModal('${r.rule_id}')" title="編輯"&gt;&lt;svg width="12" height="12" viewBox="0 0 14 14" fill="none"&gt;&lt;path d="M9.5 2.5l2 2L5 11H3v-2l6.5-6.5z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}).join('');</p>
+<p class="p1">}</p>
+<p class="p1">function openRuleModal(id){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rl-id').value=id||'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rule-modal-title').textContent=id?'編輯固定規則':'新增固定規則';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(id){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const r=allRules.find(r=&gt;r.rule_id===id);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(r){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('rl-name').value=r.rule_name;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('rl-title').value=r.title_template;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('rl-day').value=r.value;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('rl-active').value=String(r.active).toUpperCase()==='TRUE'?'TRUE':'FALSE';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const aIds=String(r.assigned_to).split(',').map(s=&gt;s.trim());</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.querySelectorAll('#rl-assignee-checks input').forEach(cb=&gt;{cb.checked=aIds.includes(cb.value);updateCheckStyle('rla-'+cb.value,cb.checked)});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>['rl-name','rl-title','rl-day'].forEach(id=&gt;document.getElementById(id).value='');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('rl-active').value='TRUE';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.querySelectorAll('#rl-assignee-checks input').forEach(cb=&gt;{cb.checked=false;updateCheckStyle('rla-'+cb.value,false)});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('modal-rule').classList.add('open');</p>
+<p class="p1">}</p>
+<p class="p1">function closeRuleModal(){document.getElementById('modal-rule').classList.remove('open')}</p>
+<p class="p1">async function submitRule(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const id=document.getElementById('rl-id').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const rule_name=document.getElementById('rl-name').value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const template=document.getElementById('rl-title').value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const day=document.getElementById('rl-day').value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const active=document.getElementById('rl-active').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const assignees=[...document.querySelectorAll('#rl-assignee-checks input:checked')].map(c=&gt;c.value);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!rule_name||!template||!day||!assignees.length){toast('請填寫所有必填欄位','err');return}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const btn=document.getElementById('rule-submit-btn');btn.disabled=true;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const r=await apiPost({action:'saveDeadlineRule',rule_id:id||undefined,rule_name,title_template:template,value:day,assigned_to:assignees,active});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>btn.disabled=false;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(r.ok){await loadRules();closeRuleModal();renderRuleList();toast('規則已儲存','ok')}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else toast('失敗：'+r.error,'err');</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// Sheets 設定</p>
+<p class="p1">function loadSheetConfig(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('cfg-sheet-id').value=localStorage.getItem('src_sheet_id')||'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('cfg-sheet-name').value=localStorage.getItem('src_sheet_name')||'Sheet1';</p>
+<p class="p1">}</p>
+<p class="p1">function saveSheetConfig(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>localStorage.setItem('src_sheet_id',document.getElementById('cfg-sheet-id').value.trim());</p>
+<p class="p1"><span class="Apple-converted-space">  </span>localStorage.setItem('src_sheet_name',document.getElementById('cfg-sheet-name').value.trim()||'Sheet1');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>toast('設定已儲存','ok');</p>
+<p class="p1">}</p>
+<p class="p1">async function triggerImport(){toast('匯入中...','ok');const r=await apiPost({action:'importNow'});toast(r.ok?'匯入完成':'失敗：'+r.error,r.ok?'ok':'err')}</p>
+<p class="p2"><br></p>
+<p class="p1">// ── 共用 UI ───────────────────────────────────────────────────</p>
+<p class="p1">function buildMemberUI(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const mkChecks=(containerId,prefix)=&gt;allMembers.map(m=&gt;`</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;label class="check-item" id="${prefix}-${m.member_id}"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;input type="checkbox" value="${m.member_id}" onchange="updateCheckStyle('${prefix}-${m.member_id}',this.checked)"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="m-avatar"&gt;${m.name.slice(-1)}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="check-name"&gt;${esc(m.name)}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/label&gt;`).join('');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-assignee-checks').innerHTML=mkChecks('f-assignee-checks','nl');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rl-assignee-checks').innerHTML=mkChecks('rl-assignee-checks','rla');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rec-assignee-checks').innerHTML=mkChecks('rec-assignee-checks','ra');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-creator').innerHTML=allMembers.map(m=&gt;`&lt;option value="${m.member_id}"&gt;${esc(m.name)}&lt;/option&gt;`).join('');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(currentUser) document.getElementById('f-creator').value=currentUser.member_id;</p>
+<p class="p1">}</p>
+<p class="p1">function clearTaskForm(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>['f-title','f-desc','f-dval'].forEach(id=&gt;document.getElementById(id).value='');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-dtype').value='days_after_create';onDtypeChange();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('recur-toggle').checked=false;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('recur-options').classList.remove('visible');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('deadline-options').style.display='';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('#f-assignee-checks input').forEach(cb=&gt;{cb.checked=false;updateCheckStyle('nl-'+cb.value,false)});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(currentUser) document.getElementById('f-creator').value=currentUser.member_id;</p>
+<p class="p1">}</p>
+<p class="p1">function updateCheckStyle(labelId,checked){document.getElementById(labelId)?.classList.toggle('checked',checked)}</p>
+<p class="p2"><br></p>
+<p class="p1">let toastTimer;</p>
+<p class="p1">function toast(msg,type='ok'){const el=document.getElementById('toast');el.textContent=msg;el.className=`toast ${type} show`;clearTimeout(toastTimer);toastTimer=setTimeout(()=&gt;el.classList.remove('show'),2800)}</p>
+<p class="p1">function esc(s){return String(s).replace(/&amp;/g,'&amp;amp;').replace(/&lt;/g,'&amp;lt;').replace(/&gt;/g,'&amp;gt;')}</p>
+<p class="p2"><br></p>
+<p class="p1">bootLogin();</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+<p class="p2"><br></p>
+</body>
+</html>

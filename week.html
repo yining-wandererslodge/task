@@ -1,0 +1,241 @@
+{\rtf1\ansi\ansicpg950\cocoartf2709
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fmodern\fcharset0 CourierNewPSMT;}
+{\colortbl;\red255\green255\blue255;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c100000\c100000\c100000;\cssrgb\c0\c0\c0;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs28 \cf0 \cb2 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec3 <!DOCTYPE html>\
+<html lang="zh-TW">\
+<head>\
+<meta charset="UTF-8">\
+<meta name="viewport" content="width=device-width, initial-scale=1.0">\
+<title>\uc0\u36913 \u32080 \u31639 </title>\
+<link rel="preconnect" href="https://fonts.googleapis.com">\
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">\
+<style>\
+:root \{\
+  --paper:#f5f0e8;--paper2:#ede8dc;--paper3:#e4ddd0;\
+  --ink:#2c2820;--ink2:#5a5245;--ink3:#9a8f82;\
+  --border:#d4cbbf;--border2:#bfb5a8;\
+  --done:#6b8f6b;--warn:#c17f3a;--danger:#b85450;--accent:#7a6652;\
+  --sans:'Noto Sans TC',sans-serif;--serif:'Lora',serif;\
+  --radius:8px;--radius-lg:14px;\
+\}\
+*,*::before,*::after\{box-sizing:border-box;margin:0;padding:0\}\
+body\{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.65;min-height:100vh;padding-bottom:60px\}\
+\
+.topbar\{display:flex;align-items:center;gap:0;background:var(--paper2);border-bottom:1px solid var(--border);padding:0 28px;height:52px;position:sticky;top:0;z-index:10\}\
+.topbar-brand\{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--accent);margin-right:20px\}\
+.topbar-sep\{width:1px;height:18px;background:var(--border);margin:0 16px\}\
+.topbar-title\{font-size:13px;color:var(--ink2)\}\
+.back-link\{margin-left:auto;font-size:12px;padding:5px 14px;border-radius:var(--radius);border:1px solid var(--border);background:transparent;color:var(--ink2);text-decoration:none;transition:all .15s\}\
+.back-link:hover\{border-color:var(--border2);color:var(--ink)\}\
+\
+.container\{max-width:860px;margin:0 auto;padding:32px 24px\}\
+\
+/* \uc0\u36913 \u23566 \u35261  */\
+.week-nav\{display:flex;align-items:center;gap:16px;margin-bottom:32px\}\
+.week-btn\{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--ink3);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s\}\
+.week-btn:hover\{border-color:var(--border2);color:var(--ink)\}\
+.week-btn:disabled\{opacity:.3;cursor:not-allowed\}\
+.week-label\{font-family:var(--serif);font-size:15px;color:var(--ink);flex:1;text-align:center\}\
+\
+/* \uc0\u32317 \u35261 \u21345  */\
+.overview-grid\{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:36px\}\
+.stat-card\{background:var(--paper2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;text-align:center;position:relative;overflow:hidden\}\
+.stat-card::after\{content:'';position:absolute;top:0;left:0;right:0;height:2px\}\
+.stat-card.green::after\{background:var(--done)\}\
+.stat-card.red::after\{background:var(--danger)\}\
+.stat-card.orange::after\{background:var(--warn)\}\
+.stat-num\{font-family:var(--serif);font-size:36px;font-weight:400;line-height:1;margin-bottom:6px\}\
+.stat-card.green .stat-num\{color:var(--done)\}\
+.stat-card.red   .stat-num\{color:var(--danger)\}\
+.stat-card.orange .stat-num\{color:var(--warn)\}\
+.stat-label\{font-size:12px;color:var(--ink3)\}\
+\
+/* \uc0\u25104 \u21729 \u21345  */\
+.section-hd\{display:flex;align-items:center;gap:12px;margin-bottom:14px\}\
+.section-title\{font-size:11px;letter-spacing:.1em;color:var(--ink3);text-transform:uppercase\}\
+.section-line\{flex:1;height:1px;background:var(--border)\}\
+\
+.member-cards\{display:flex;flex-direction:column;gap:10px\}\
+.member-card\{background:var(--paper2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:border-color .15s\}\
+.member-card:hover\{border-color:var(--border2)\}\
+.member-card.has-overdue\{border-color:#ddc8c8\}\
+\
+.member-card-header\{display:grid;grid-template-columns:auto 1fr repeat(3,72px) 28px;align-items:center;gap:14px;padding:14px 18px;cursor:pointer;user-select:none\}\
+.m-avatar\{width:32px;height:32px;border-radius:50%;background:var(--paper3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--ink2);flex-shrink:0\}\
+.m-info .name\{font-size:13px;font-weight:500\}\
+.m-info .sub\{font-size:10px;color:var(--ink3)\}\
+.stat-pill\{text-align:center\}\
+.pill-num\{font-family:var(--serif);font-size:20px;font-weight:400;display:block;line-height:1\}\
+.pill-num.green\{color:var(--done)\}\
+.pill-num.red\{color:var(--danger)\}\
+.pill-num.orange\{color:var(--warn)\}\
+.pill-label\{font-size:10px;color:var(--ink3)\}\
+.expand-btn\{width:26px;height:26px;border-radius:6px;border:1px solid transparent;background:transparent;color:var(--ink3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:12px\}\
+.expand-btn:hover\{border-color:var(--border);background:var(--paper3)\}\
+\
+.task-detail\{display:none;border-top:1px solid var(--border);padding:0 18px 14px\}\
+.task-detail.open\{display:block\}\
+.detail-title\{font-size:10px;letter-spacing:.1em;color:var(--ink3);text-transform:uppercase;padding:12px 0 8px\}\
+.incomplete-item\{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)\}\
+.incomplete-item:last-child\{border-bottom:none\}\
+.i-dot\{width:5px;height:5px;border-radius:50%;background:var(--danger);flex-shrink:0\}\
+.i-dot.warn\{background:var(--warn)\}\
+.i-title\{font-size:13px;flex:1\}\
+.i-date\{font-size:11px;color:var(--ink3)\}\
+.i-badge\{font-size:10px;padding:2px 7px;border-radius:4px;background:rgba(184,84,80,.1);color:var(--danger)\}\
+\
+.loading\{display:flex;align-items:center;gap:8px;padding:60px 0;justify-content:center;color:var(--ink3);font-size:12px;font-style:italic\}\
+.spinner\{width:14px;height:14px;border:1.5px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite\}\
+@keyframes spin\{to\{transform:rotate(360deg)\}\}\
+</style>\
+</head>\
+<body>\
+\
+<header class="topbar">\
+  <span class="topbar-brand">taskboard</span>\
+  <div class="topbar-sep"></div>\
+  <span class="topbar-title">\uc0\u36913 \u32080 \u31639 </span>\
+  <a href="index.html" class="back-link">\uc0\u8592  \u36820 \u22238 \u30475 \u26495 </a>\
+</header>\
+\
+<div class="container">\
+\
+  <div class="week-nav">\
+    <button class="week-btn" id="prev-week" onclick="changeWeek(-1)">\'8b</button>\
+    <span class="week-label" id="week-label">\uc0\u36617 \u20837 \u20013 ...</span>\
+    <button class="week-btn" id="next-week" onclick="changeWeek(1)" disabled>\'9b</button>\
+  </div>\
+\
+  <div class="overview-grid" id="overview">\
+    <div class="stat-card green"><div class="stat-num">\'97</div><div class="stat-label">\uc0\u23436 \u25104 \u20219 \u21209 </div></div>\
+    <div class="stat-card red">  <div class="stat-num">\'97</div><div class="stat-label">\uc0\u36926 \u26399 \u20219 \u21209 </div></div>\
+    <div class="stat-card orange"><div class="stat-num">\'97</div><div class="stat-label">\uc0\u24453 \u36774 \u26410 \u23436 \u25104 </div></div>\
+  </div>\
+\
+  <div class="section-hd">\
+    <span class="section-title">\uc0\u20491 \u20154 \u32080 \u31639 </span>\
+    <div class="section-line"></div>\
+  </div>\
+  <div class="member-cards" id="member-cards">\
+    <div class="loading"><div class="spinner"></div> \uc0\u36617 \u20837 \u20013 </div>\
+  </div>\
+\
+</div>\
+\
+<script>\
+const API='https://script.google.com/macros/s/AKfycbzACGknjRjp79Ly_JE-C7GFRaa23xjY7EI5JgWSU7dUauCIhGmXDpNnT6a4rjaVrGnvCg/exec';\
+let allMembers=[],allTasks=[],weekOffset=0;\
+\
+function getWeekRange(offset=0)\{\
+  const now=new Date(),day=now.getDay();\
+  const diff=day===0?-6:1-day;\
+  const monday=new Date(now); monday.setDate(now.getDate()+diff+offset*7); monday.setHours(0,0,0,0);\
+  const sunday=new Date(monday); sunday.setDate(monday.getDate()+6); sunday.setHours(23,59,59,999);\
+  return\{monday,sunday\};\
+\}\
+function fmt(d)\{return d.toLocaleDateString('zh-TW',\{month:'numeric',day:'numeric'\})\}\
+\
+async function init()\{\
+  const[mr,tr]=await Promise.all([\
+    fetch(`$\{API\}?action=getMembers`).then(r=>r.json()),\
+    fetch(`$\{API\}?action=getTasks`).then(r=>r.json()),\
+  ]);\
+  allMembers=mr.members||[]; allTasks=tr.tasks||[];\
+  renderWeek();\
+\}\
+\
+function changeWeek(dir)\{\
+  weekOffset+=dir;\
+  document.getElementById('next-week').disabled=weekOffset>=0;\
+  renderWeek();\
+\}\
+\
+function renderWeek()\{\
+  const\{monday,sunday\}=getWeekRange(weekOffset);\
+  document.getElementById('week-label').textContent=\
+    weekOffset===0?`\uc0\u26412 \u36913 \u12288 $\{fmt(monday)\} \'97 $\{fmt(sunday)\}`:\
+    weekOffset===-1?`\uc0\u19978 \u36913 \u12288 $\{fmt(monday)\} \'97 $\{fmt(sunday)\}`:\
+    `$\{fmt(monday)\} \'97 $\{fmt(sunday)\}`;\
+\
+  const summaries=allMembers.map(m=>calcSummary(m,monday,sunday));\
+  renderOverview(summaries);\
+  renderCards(summaries);\
+\}\
+\
+function calcSummary(member,monday,sunday)\{\
+  const myTasks=allTasks.filter(t=>\{\
+    if(!t.task_id) return false;\
+    return String(t.assigned_to).split(',').map(s=>s.trim()).includes(member.member_id);\
+  \});\
+  const completed=myTasks.filter(t=>\{\
+    if(t.status!=='done'||!t.completed_at) return false;\
+    const d=new Date(t.completed_at); return d>=monday&&d<=sunday;\
+  \});\
+  const overdue=myTasks.filter(t=>\{\
+    if(t.status==='done'||!t.deadline_date) return false;\
+    const d=new Date(t.deadline_date); d.setHours(0,0,0,0);\
+    return d<new Date(new Date().setHours(0,0,0,0));\
+  \});\
+  const incomplete=myTasks.filter(t=>t.status==='todo'||t.status==='overdue');\
+  return\{member,completed,overdue,incomplete\};\
+\}\
+\
+function renderOverview(summaries)\{\
+  const tc=summaries.reduce((s,m)=>s+m.completed.length,0);\
+  const to=summaries.reduce((s,m)=>s+m.overdue.length,0);\
+  const ti=summaries.reduce((s,m)=>s+m.incomplete.length,0);\
+  document.getElementById('overview').innerHTML=`\
+    <div class="stat-card green"><div class="stat-num">$\{tc\}</div><div class="stat-label">\uc0\u23436 \u25104 \u20219 \u21209 </div></div>\
+    <div class="stat-card red">  <div class="stat-num">$\{to\}</div><div class="stat-label">\uc0\u36926 \u26399 \u20219 \u21209 </div></div>\
+    <div class="stat-card orange"><div class="stat-num">$\{ti\}</div><div class="stat-label">\uc0\u24453 \u36774 \u26410 \u23436 \u25104 </div></div>`;\
+\}\
+\
+function renderCards(summaries)\{\
+  const el=document.getElementById('member-cards');\
+  if(!summaries.length)\{el.innerHTML='<div class="loading">\uc0\u27794 \u26377 \u25104 \u21729 \u36039 \u26009 </div>';return\}\
+  el.innerHTML=summaries.map(s=>\{\
+    const\{member,completed,overdue,incomplete\}=s;\
+    const incompleteRows=incomplete.map(t=>`\
+      <div class="incomplete-item">\
+        <div class="i-dot $\{t.status==='overdue'?'':'warn'\}"></div>\
+        <span class="i-title">$\{esc(t.title)\}</span>\
+        <span class="i-date">$\{t.deadline_date||''\}</span>\
+        $\{t.status==='overdue'?'<span class="i-badge">\uc0\u36926 \u26399 </span>':''\}\
+      </div>`).join('');\
+    return `<div class="member-card $\{overdue.length?'has-overdue':''\}">\
+      <div class="member-card-header" onclick="toggleDetail('d-$\{member.member_id\}',this)">\
+        <div class="m-avatar">$\{member.name.slice(-1)\}</div>\
+        <div class="m-info">\
+          <div class="name">$\{esc(member.name)\}</div>\
+          <div class="sub">$\{member.member_id\}</div>\
+        </div>\
+        <div class="stat-pill"><span class="pill-num green">$\{completed.length\}</span><span class="pill-label">\uc0\u23436 \u25104 </span></div>\
+        <div class="stat-pill"><span class="pill-num red">$\{overdue.length\}</span><span class="pill-label">\uc0\u36926 \u26399 </span></div>\
+        <div class="stat-pill"><span class="pill-num orange">$\{incomplete.length\}</span><span class="pill-label">\uc0\u26410 \u23436 \u25104 </span></div>\
+        <button class="expand-btn" tabindex="-1">\uc0\u9662 </button>\
+      </div>\
+      <div class="task-detail" id="d-$\{member.member_id\}">\
+        $\{incomplete.length\
+          ?`<div class="detail-title">\uc0\u26410 \u23436 \u25104 \u20219 \u21209 \u65288 $\{incomplete.length\} \u20214 \u65289 </div>$\{incompleteRows\}`\
+          :`<div style="padding:14px 0;color:var(--ink3);font-size:12px;font-style:italic">\uc0\u26412 \u36913 \u20840 \u37096 \u23436 \u25104 </div>`\}\
+      </div>\
+    </div>`;\
+  \}).join('');\
+\}\
+\
+function toggleDetail(id,header)\{\
+  const el=document.getElementById(id),btn=header.querySelector('.expand-btn');\
+  el.classList.toggle('open'); btn.textContent=el.classList.contains('open')?'\uc0\u9652 ':'\u9662 ';\
+\}\
+function esc(s)\{return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')\}\
+init();\
+</script>\
+</body>\
+</html>\
+}
