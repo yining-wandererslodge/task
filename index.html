@@ -869,19 +869,65 @@ function openRecurModal(id){
   document.getElementById('modal-recur').classList.add('open');
 }
 function closeRecurModal(){document.getElementById('modal-recur').classList.remove('open')}
+
 async function submitRecurRule(){
-  const id=document.getElementById('rec-id').value;
-  const title=document.getElementById('rec-title').value.trim();
-  const freq=document.getElementById('rec-freq').value;
-  const assignees=[...document.querySelectorAll('#rec-assignee-checks input:checked')].map(c=>c.value);
-  if(!title||!assignees.length){toast('請填寫必填欄位','err');return}
-  const weekdays=getSelectedWeekdays('[data-rday]');
-  const btn=document.getElementById('recur-submit-btn');btn.disabled=true;
-  const r=await apiPost({action:'saveRecurrenceRule',recurrence_id:id||undefined,title,description:document.getElementById('rec-desc').value.trim(),assigned_to:assignees,created_by:currentUser.member_id,freq,interval:document.getElementById('rec-interval').value||1,weekdays,month_day:document.getElementById('rec-month-day').value,lead_days:document.getElementById('rec-lead').value||0,active:document.getElementById('rec-active').value});
-  btn.disabled=false;
-  if(r.ok){await loadRecurrenceRules();closeRecurModal();renderRecurrenceList();toast('已儲存','ok')}
-  else toast('失敗：'+r.error,'err');
+  const id = document.getElementById('rec-id').value;
+  const title = document.getElementById('rec-title').value.trim();
+  const freq = document.getElementById('rec-freq').value;
+  const assignees = [...document.querySelectorAll('#rec-assignee-checks input:checked')].map(c => c.value);
+  
+  // 1. 嚴格檢查必填項
+  if (!title || !assignees.length) {
+    toast('請填寫標題並指派成員', 'err');
+    return;
+  }
+  
+  // 2. 確保 currentUser 存在
+  if (!currentUser || !currentUser.member_id) {
+    toast('登入資訊遺失，請重新整理頁面', 'err');
+    return;
+  }
+
+  const weekdays = getSelectedWeekdays('[data-rday]');
+  const btn = document.getElementById('recur-submit-btn');
+  btn.disabled = true;
+
+  // 3. 封裝要送出的資料
+  const payload = {
+    action: 'saveRecurrenceRule',
+    recurrence_id: id || undefined,
+    title: title,
+    description: document.getElementById('rec-desc').value.trim(),
+    assigned_to: assignees,           // 這裡是陣列，GAS 已有處理 join(',')
+    created_by: currentUser.member_id, // 確保 Key 名稱與 GAS 的 _require 一致
+    freq: freq,
+    interval: document.getElementById('rec-interval').value || "1",
+    weekdays: weekdays || "",          // 確保不是 undefined
+    month_day: document.getElementById('rec-month-day').value || "",
+    lead_days: document.getElementById('rec-lead').value || "0",
+    active: document.getElementById('rec-active').value || "TRUE"
+  };
+
+  try {
+    const r = await apiPost(payload);
+    btn.disabled = false;
+    
+    if (r.ok) {
+      await loadRecurrenceRules();
+      closeRecurModal();
+      renderRecurrenceList();
+      toast('例行任務規則已儲存', 'ok');
+    } else {
+      toast('失敗：' + (r.error || '未知錯誤'), 'err');
+    }
+  } catch (err) {
+    btn.disabled = false;
+    toast('連線失敗：' + err.message, 'err');
+  }
 }
+
+
+  
 async function deleteRecurRule(id){
   if(!confirm('確定刪除這條例行規則？（已建立的任務不受影響）')) return;
   const r=await apiPost({action:'deleteRecurrenceRule',recurrence_id:id});
