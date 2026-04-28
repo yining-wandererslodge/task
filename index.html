@@ -482,7 +482,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
 <div class="toast" id="toast"></div>
 
 <script>
-const API='https://script.google.com/macros/s/AKfycbzACGknjRjp79Ly_JE-C7GFRaa23xjY7EI5JgWSU7dUauCIhGmXDpNnT6a4rjaVrGnvCg/exec';
+const API = 'https://connectinggasandgithub.yining-dbe.workers.dev';
 let allTasks=[],allMembers=[],allRules=[],allRecurrenceRules=[];
 let currentUser=null,viewMode='mine',activeMemberId='all',activeFilter='all';
 let editingTaskId=null,reassignTarget=null;
@@ -522,31 +522,19 @@ async function loadMembers(){const r=await apiFetch('getMembers');allMembers=r.m
 async function loadTasks(){const r=await apiFetch('getTasks');allTasks=r.tasks||[]}
 async function loadRules(){const r=await apiFetch('getDeadlineRules');allRules=r.rules||[]}
 async function loadRecurrenceRules(){const r=await apiFetch('getRecurrenceRules');allRecurrenceRules=r.rules||[]}
-function jsonp(params) {
-  return new Promise((resolve, reject) => {
-    const cb = 'cb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
-    const script = document.createElement('script');
-    const qs = new URLSearchParams({ ...params, callback: cb }).toString();
-    console.log('JSONP URL:', API + '?' + qs);  // ← 加這行
-    script.src = API + '?' + qs;
-    window[cb] = (data) => {
-      delete window[cb];
-      document.head.removeChild(script);
-      resolve(data);
-    };
-    script.onerror = (e) => {
-      console.log('JSONP error:', e);  // ← 加這行
-      reject(new Error('JSONP 失敗'));
-    };
-    document.head.appendChild(script);
-  });
-}
 async function apiFetch(action, params = {}) {
-  return jsonp({ action, ...params });
+  const qs = new URLSearchParams({ action, ...params }).toString();
+  const res = await fetch(`${API}?${qs}`);
+  return res.json();
 }
 
 async function apiPost(b) {
-  return jsonp({ payload: JSON.stringify(b) });
+  const res = await fetch(API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(b),
+  });
+  return res.json();
 }
   
 // ── 渲染 ─────────────────────────────────────────────────────
