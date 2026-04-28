@@ -527,17 +527,20 @@ function jsonp(params) {
     const cb = 'cb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
     const script = document.createElement('script');
     const qs = new URLSearchParams({ ...params, callback: cb }).toString();
+    console.log('JSONP URL:', API + '?' + qs);  // ← 加這行
     script.src = API + '?' + qs;
     window[cb] = (data) => {
       delete window[cb];
       document.head.removeChild(script);
       resolve(data);
     };
-    script.onerror = () => reject(new Error('JSONP 失敗'));
+    script.onerror = (e) => {
+      console.log('JSONP error:', e);  // ← 加這行
+      reject(new Error('JSONP 失敗'));
+    };
     document.head.appendChild(script);
   });
 }
-
 async function apiFetch(action, params = {}) {
   return jsonp({ action, ...params });
 }
