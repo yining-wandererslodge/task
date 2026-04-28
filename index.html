@@ -524,9 +524,9 @@ async function loadRules(){const r=await apiFetch('getDeadlineRules');allRules=r
 async function loadRecurrenceRules(){const r=await apiFetch('getRecurrenceRules');allRecurrenceRules=r.rules||[]}
 async function apiFetch(a,p={}){return(await fetch(`${API}?${new URLSearchParams({action:a,...p})}`)).json()}
 
-  async function apiPost(b) {
-  // 把資料用 GET 參數傳，繞過 302 POST 問題
-  const url = API + '?payload=' + encodeURIComponent(JSON.stringify(b));
+async function apiPost(b) {
+  const ECHO = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnS1A6SA8cydH48zpyiH_m2e7YqiZlUd9s3o-KpDYqiJhMDRT1GjECySpSbBs7UczwmFSQQFxbjROJEjeIWBYVBBHamucMXqT2iMrcREPAuN8Uk0URXk4luPCqDt4Fts09G-qgGkmjhzX8SmXZV0-3Qm9lUhc1tskXMC1lpGLy2VFV9xow9wZtqF13KviBgB5r_j3Jw_j9IwPVR9z3DjsnXe4RsbCCv6viNqk1I1nrujgTo66SO3BXgc19K-sY-eIzp6aNn6UE4D7IXponyVJuByuiizt4thXMslTmxlrsjruLB6Y80&lib=M9RgV0ORk5yBkRW5y865o5tg2DlywsPFc';
+  const url = ECHO + '&payload=' + encodeURIComponent(JSON.stringify(b));
   const res = await fetch(url);
   return res.json();
 }
