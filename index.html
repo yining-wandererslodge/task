@@ -524,8 +524,8 @@ async function loadRules(){const r=await apiFetch('getDeadlineRules');allRules=r
 async function loadRecurrenceRules(){const r=await apiFetch('getRecurrenceRules');allRecurrenceRules=r.rules||[]}
 async function apiFetch(a,p={}){return(await fetch(`${API}?${new URLSearchParams({action:a,...p})}`)).json()}
 
-async function apiPost(b) {
-  // b 必須是一個包含 action 屬性的物件，例如 { action: 'saveRecurrenceRule', ... }
+  async function apiPost(b) {
+  // 把資料用 GET 參數傳，繞過 302 POST 問題
   const url = API + '?payload=' + encodeURIComponent(JSON.stringify(b));
   const res = await fetch(url);
   return res.json();
