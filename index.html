@@ -522,13 +522,28 @@ async function loadMembers(){const r=await apiFetch('getMembers');allMembers=r.m
 async function loadTasks(){const r=await apiFetch('getTasks');allTasks=r.tasks||[]}
 async function loadRules(){const r=await apiFetch('getDeadlineRules');allRules=r.rules||[]}
 async function loadRecurrenceRules(){const r=await apiFetch('getRecurrenceRules');allRecurrenceRules=r.rules||[]}
-async function apiFetch(a,p={}){return(await fetch(`${API}?${new URLSearchParams({action:a,...p})}`)).json()}
+function jsonp(params) {
+  return new Promise((resolve, reject) => {
+    const cb = 'cb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    const script = document.createElement('script');
+    const qs = new URLSearchParams({ ...params, callback: cb }).toString();
+    script.src = API + '?' + qs;
+    window[cb] = (data) => {
+      delete window[cb];
+      document.head.removeChild(script);
+      resolve(data);
+    };
+    script.onerror = () => reject(new Error('JSONP 失敗'));
+    document.head.appendChild(script);
+  });
+}
+
+async function apiFetch(action, params = {}) {
+  return jsonp({ action, ...params });
+}
 
 async function apiPost(b) {
-  const ECHO = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnS1A6SA8cydH48zpyiH_m2e7YqiZlUd9s3o-KpDYqiJhMDRT1GjECySpSbBs7UczwmFSQQFxbjROJEjeIWBYVBBHamucMXqT2iMrcREPAuN8Uk0URXk4luPCqDt4Fts09G-qgGkmjhzX8SmXZV0-3Qm9lUhc1tskXMC1lpGLy2VFV9xow9wZtqF13KviBgB5r_j3Jw_j9IwPVR9z3DjsnXe4RsbCCv6viNqk1I1nrujgTo66SO3BXgc19K-sY-eIzp6aNn6UE4D7IXponyVJuByuiizt4thXMslTmxlrsjruLB6Y80&lib=M9RgV0ORk5yBkRW5y865o5tg2DlywsPFc';
-  const url = ECHO + '&payload=' + encodeURIComponent(JSON.stringify(b));
-  const res = await fetch(url);
-  return res.json();
+  return jsonp({ payload: JSON.stringify(b) });
 }
   
 // ── 渲染 ─────────────────────────────────────────────────────
