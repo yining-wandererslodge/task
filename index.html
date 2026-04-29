@@ -819,7 +819,7 @@ function renderRecurrenceList(){
     const aNames=String(r.assigned_to).split(',').map(id=>{const m=allMembers.find(m=>m.member_id===id);return m?m.name:id}).join('、');
     const active=String(r.active).toUpperCase()==='TRUE';
     let detail=freqLabel[r.freq]||r.freq;
-    if(r.freq==='weekly'&&r.weekdays){const dayNames=['日','一','二','三','四','五','六'];detail+=' '+r.weekdays.split(',').map(d=>dayNames[d]).join('/')}
+    if(r.freq==='weekly'&&r.weekdays){const dayNames=['日','一','二','三','四','五','六'];detail+=' '+String(r.weekdays).split(',').map(d=>dayNames[parseInt(d)]).join('/')}
     if(r.freq==='monthly'&&r.month_day) detail+=` ${r.month_day} 號`;
     if(r.interval&&r.interval>1) detail=`每 ${r.interval} ${r.freq==='daily'?'天':r.freq==='weekly'?'週':'月'}`;
     if(r.lead_days>0) detail+=`，提前 ${r.lead_days} 天建立`;
@@ -856,7 +856,7 @@ function openRecurModal(id){
       document.getElementById('rec-month-day').value=r.month_day||'';
       onRecFreqChange();
       // 星期
-      const selected=(r.weekdays||'').split(',').map(s=>s.trim());
+      const selected=String(r.weekdays||'').split(',').map(s=>s.trim());
       document.querySelectorAll('[data-rday]').forEach(btn=>{btn.classList.toggle('selected',selected.includes(btn.dataset.rday))});
       // 指派
       const aIds=String(r.assigned_to).split(',').map(s=>s.trim());
