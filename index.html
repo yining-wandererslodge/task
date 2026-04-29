@@ -489,6 +489,11 @@ let editingTaskId=null,reassignTarget=null;
 
 // ── 登入 ─────────────────────────────────────────────────────
 async function bootLogin(){
+  // 支援網址參數自動登入，例如 ?user=M006
+  const urlUser = new URLSearchParams(window.location.search).get('user');
+  if (urlUser) {
+    localStorage.setItem('taskboard_user', urlUser);
+  }
   const r=await apiFetch('getMembers');
   const members=r.members||[];
   const sel=document.getElementById('login-select');
@@ -645,7 +650,14 @@ function setFilter(f,btn){
   renderTasks();
 }
 async function toggleDone(id,isDone){
-  if(isDone) return;
+ if(isDone){
+    if(!confirm('要取消完成這個任務嗎？')) return;
+    const card=document.getElementById(`card-${id}`);if(card)card.style.opacity='.4';
+    const r=await apiPost({action:'uncompleteTask',task_id:id});
+    if(r.ok){const t=allTasks.find(t=>t.task_id===id);if(t){t.status=r.status;t.completed_at=''}render();toast('已取消完成','ok')}
+    else{if(card)card.style.opacity='';toast('失敗：'+r.error,'err')}
+    return;
+  }
   const card=document.getElementById(`card-${id}`);if(card)card.style.opacity='.4';
   const r=await apiPost({action:'completeTask',task_id:id});
   if(r.ok){const t=allTasks.find(t=>t.task_id===id);if(t){t.status='done';t.completed_at=new Date().toISOString()}render();toast('任務完成','ok')}
