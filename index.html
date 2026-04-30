@@ -489,18 +489,27 @@ let editingTaskId=null,reassignTarget=null;
 
 // ── 登入 ─────────────────────────────────────────────────────
 async function bootLogin(){
-  // 支援網址參數自動登入，例如 ?user=M006
   const urlUser = new URLSearchParams(window.location.search).get('user');
-  if (urlUser) {
-    localStorage.setItem('taskboard_user', urlUser);
+  const savedUser = localStorage.getItem('taskboard_user');
+  const memberId = urlUser || savedUser;
+
+  const r = await apiFetch('getMembers');
+  const members = r.members || [];
+  const sel = document.getElementById('login-select');
+  sel.innerHTML = '<option value="">— 選擇 —</option>' +
+    members.map(m => `<option value="${m.member_id}">${m.name}</option>`).join('');
+
+  // 如果有 urlUser 或 savedUser，直接跳過登入頁
+  if (memberId && members.find(m => m.member_id === memberId)) {
+    localStorage.setItem('taskboard_user', memberId);
+    startApp(memberId);
+    return;
   }
-  const r=await apiFetch('getMembers');
-  const members=r.members||[];
-  const sel=document.getElementById('login-select');
-  sel.innerHTML='<option value="">— 選擇 —</option>'+members.map(m=>`<option value="${m.member_id}">${m.name}</option>`).join('');
-  const saved=localStorage.getItem('taskboard_user');
-  if(saved) sel.value=saved;
+
+  const saved = localStorage.getItem('taskboard_user');
+  if (saved) sel.value = saved;
 }
+  
 function doLogin(){
   const sel=document.getElementById('login-select');
   if(!sel.value){toast('請選擇帳號','err');return}
