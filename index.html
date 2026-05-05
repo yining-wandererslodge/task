@@ -1054,7 +1054,6 @@ function buildMemberUI(){
       <span class="check-name">${esc(m.name)}</span>
     </label>`).join('');
   document.getElementById('f-assignee-checks').innerHTML=mkChecks('f-assignee-checks','nl');
-  document.getElementById('rl-assignee-checks').innerHTML=mkChecks('rl-assignee-checks','rla');
   document.getElementById('rec-assignee-checks').innerHTML=mkChecks('rec-assignee-checks','ra');
   document.getElementById('f-creator').innerHTML=allMembers.map(m=>`<option value="${m.member_id}">${esc(m.name)}</option>`).join('');
   if(currentUser) document.getElementById('f-creator').value=currentUser.member_id;
