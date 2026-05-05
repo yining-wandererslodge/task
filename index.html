@@ -844,22 +844,23 @@ async function submitReassign(){
 function showPanel(name){
   document.getElementById('task-area').style.display='none';
   document.getElementById('settings-panel').style.display='';
-  ['recurrence','rules','sheets'].forEach(p=>document.getElementById('panel-'+p).style.display=p===name?'':'none');
+  ['recurrence','sheets'].forEach(p=>{
+    const el=document.getElementById('panel-'+p);
+    if(el) el.style.display=p===name?'':'none';
+  });
   document.querySelectorAll('.sidebar-action').forEach(el=>el.classList.remove('active'));
   document.getElementById('nav-'+name)?.classList.add('active');
   if(name==='recurrence') renderRecurrenceList();
-  if(name==='rules') renderRuleList();
   if(name==='sheets') loadSheetConfig();
 }
 
-// 例行任務列表
 function renderRecurrenceList(){
   const el=document.getElementById('recurrence-list');
   if(!allRecurrenceRules.length){el.innerHTML='<div class="empty">尚無例行任務規則</div>';return}
   const freqLabel={daily:'每天',weekly:'每週',monthly:'每月'};
   el.innerHTML=allRecurrenceRules.map(r=>{
     const aNames=String(r.assigned_to).split(',').map(id=>{const m=allMembers.find(m=>m.member_id===id);return m?m.name:id}).join('、');
-    const active=String(r.active).toUpperCase()==='TRUE';
+    const active=_isActiveFE(r.active);
     let detail=freqLabel[r.freq]||r.freq;
     if(r.freq==='weekly'&&r.weekdays){const dayNames=['日','一','二','三','四','五','六'];detail+=' '+String(r.weekdays).split(',').map(d=>dayNames[parseInt(d)]).join('/')}
     if(r.freq==='monthly'&&r.month_day) detail+=` ${r.month_day} 號`;
@@ -881,6 +882,12 @@ function renderRecurrenceList(){
       </div>
     </div>`;
   }).join('');
+}
+
+// 前端版的 active 判斷（相容布林和字串）
+function _isActiveFE(val){
+  if(typeof val==='boolean') return val;
+  return String(val).toUpperCase()==='TRUE';
 }
 
 function openRecurModal(id){
