@@ -247,9 +247,6 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
         <div class="sidebar-action" id="nav-recurrence" onclick="showPanel('recurrence')">
           <span style="font-size:13px">↻</span> 例行任務
         </div>
-        <div class="sidebar-action" id="nav-rules" onclick="showPanel('rules')">
-          <span style="font-size:13px">◷</span> 固定規則
-        </div>
         <div class="sidebar-action" id="nav-sheets" onclick="showPanel('sheets')">
           <span style="font-size:13px">⊞</span> 來源 Sheets
         </div>
@@ -268,13 +265,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
         <div class="rule-list" id="recurrence-list"></div>
         <button class="btn-primary" onclick="openRecurModal()">＋ 新增例行任務</button>
       </div>
-      <!-- 固定規則管理 -->
-      <div id="panel-rules" style="display:none">
-        <div class="settings-title">固定規則</div>
-        <div class="settings-sub">每月自動建立的任務。</div>
-        <div class="rule-list" id="rule-list"></div>
-        <button class="btn-primary" onclick="openRuleModal()">＋ 新增規則</button>
-      </div>
+
       <!-- 來源 Sheets -->
       <div id="panel-sheets" style="display:none">
         <div class="settings-title">來源 Sheets 串接</div>
@@ -405,24 +396,6 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
   </div>
 </div>
 
-<!-- 固定規則 Modal -->
-<div class="modal-backdrop" id="modal-rule" onclick="if(event.target===this)closeRuleModal()">
-  <div class="modal" style="width:420px">
-    <div class="modal-title" id="rule-modal-title">新增固定規則</div>
-    <input type="hidden" id="rl-id">
-    <div class="form-row"><label class="form-label">規則名稱 *</label><input class="form-input" id="rl-name" placeholder="例如：每月結算"></div>
-    <div class="form-row"><label class="form-label">任務標題模板 *</label><input class="form-input" id="rl-title" placeholder="例如：本月結算任務"></div>
-    <div class="form-row-2">
-      <div><label class="form-label">每月幾號 *</label><input class="form-input" id="rl-day" type="number" min="1" max="28" placeholder="1–28"></div>
-      <div><label class="form-label">狀態</label><select class="form-select" id="rl-active"><option value="TRUE">啟用</option><option value="FALSE">停用</option></select></div>
-    </div>
-    <div class="form-row"><label class="form-label">指派給 *</label><div class="member-checks" id="rl-assignee-checks"></div></div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeRuleModal()">取消</button>
-      <button class="btn-submit" id="rule-submit-btn" onclick="submitRule()">儲存</button>
-    </div>
-  </div>
-</div>
 
 <!-- 例行任務設定 Modal（從設定面板開啟） -->
 <div class="modal-backdrop" id="modal-recur" onclick="if(event.target===this)closeRecurModal()">
@@ -658,27 +631,75 @@ function setFilter(f,btn){
   btn.classList.add(f==='overdue'?'active-danger':f==='todo'?'active-warn':f==='done'?'active-done':'active');
   renderTasks();
 }
-async function toggleDone(id,isDone){
- if(isDone){
-    if(!confirm('要取消完成這個任務嗎？')) return;
-    const card=document.getElementById(`card-${id}`);if(card)card.style.opacity='.4';
-    const r=await apiPost({action:'uncompleteTask',task_id:id});
-    if(r.ok){const t=allTasks.find(t=>t.task_id===id);if(t){t.status=r.status;t.completed_at=''}render();toast('已取消完成','ok')}
-    else{if(card)card.style.opacity='';toast('失敗：'+r.error,'err')}
+async function toggleDone(id, isDone) {
+  if (isDone) {
+    if (!confirm('要取消完成這個任務嗎？')) return;
+    // 樂觀更新
+    const t = allTasks.find(t => t.task_id === id);
+    const prevStatus = t ? t.status : 'done';
+    if (t) { t.status = 'todo'; t.completed_at = ''; }
+    render();
+    const r = await apiPost({ action: 'uncompleteTask', task_id: id });
+    if (r.ok) {
+      if (t) t.status = r.status;
+      render(); toast('已取消完成', 'ok');
+    } else {
+      if (t) { t.status = prevStatus; }
+      render(); toast('失敗：' + r.error, 'err');
+    }
     return;
+    // toggleDone 完成那段
+try {
+  const r = await apiPost({ action: 'completeTask', task_id: id });
+  if (!r.ok) {
+    if (t) { t.status = 'todo'; t.completed_at = ''; }
+    render(); toast('失敗：' + r.error, 'err');
+  } else {
+    toast('任務完成', 'ok');
   }
-  const card=document.getElementById(`card-${id}`);if(card)card.style.opacity='.4';
-  const r=await apiPost({action:'completeTask',task_id:id});
-  if(r.ok){const t=allTasks.find(t=>t.task_id===id);if(t){t.status='done';t.completed_at=new Date().toISOString()}render();toast('任務完成','ok')}
-  else{if(card)card.style.opacity='';toast('失敗：'+r.error,'err')}
+} catch (err) {
+  if (t) { t.status = 'todo'; t.completed_at = ''; }
+  render(); toast('網路錯誤，請重試', 'err');
 }
-async function deleteTask(id){
-  if(!confirm('確定刪除這個任務？')) return;
-  const r=await apiPost({action:'deleteTask',task_id:id});
-  if(r.ok){allTasks=allTasks.filter(t=>t.task_id!==id);render();toast('已刪除','ok')}
-  else toast('刪除失敗：'+r.error,'err');
+  }
+  // 樂觀更新：先把畫面改成完成
+  const t = allTasks.find(t => t.task_id === id);
+  if (t) { t.status = 'done'; t.completed_at = new Date().toISOString(); }
+  render();
+  const r = await apiPost({ action: 'completeTask', task_id: id });
+  if (!r.ok) {
+    if (t) { t.status = 'todo'; t.completed_at = ''; }
+    render(); toast('失敗：' + r.error, 'err');
+  } else {
+    toast('任務完成', 'ok');
+  }
 }
-
+async function deleteTask(id) {
+  if (!confirm('確定刪除這個任務？')) return;
+  // 樂觀更新
+  const removed = allTasks.find(t => t.task_id === id);
+  allTasks = allTasks.filter(t => t.task_id !== id);
+  render();
+  const r = await apiPost({ action: 'deleteTask', task_id: id });
+  if (!r.ok) {
+    if (removed) allTasks.push(removed);
+    render(); toast('刪除失敗：' + r.error, 'err');
+  } else {
+    toast('已刪除', 'ok');
+  }
+  try {
+  const r = await apiPost({ action: 'deleteTask', task_id: id });
+  if (!r.ok) {
+    if (removed) allTasks.push(removed);
+    render(); toast('刪除失敗：' + r.error, 'err');
+  } else {
+    toast('已刪除', 'ok');
+  }
+} catch (err) {
+  if (removed) allTasks.push(removed);
+  render(); toast('網路錯誤，請重試', 'err');
+}
+}
 // ★ 批量刪除已完成
 async function bulkDeleteDone(){
   const doneIds=allTasks.filter(t=>t.status==='done').map(t=>t.task_id);
