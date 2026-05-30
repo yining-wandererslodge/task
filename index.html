@@ -553,18 +553,17 @@ function renderTasks(){
   document.querySelectorAll('.sidebar-action').forEach(el=>el.classList.remove('active'));
 
   let tasks=allTasks;
-  if(viewMode==='mine'){
-    tasks=tasks.filter(t=>{
-      const a=String(t.assigned_to).split(',').map(s=>s.trim());
-      return a.includes(currentUser.member_id)||t.created_by===currentUser.member_id;
-    });
-  } else if(activeMemberId!=='all'){
-    tasks=tasks.filter(t=>{
-      const a=String(t.assigned_to).split(',').map(s=>s.trim());
-      return a.includes(activeMemberId)||t.created_by===activeMemberId;
-    });
-  }
-
+if(viewMode==='mine'){
+  tasks=tasks.filter(t=>{
+    const a=String(t.assigned_to).split(',').map(s=>s.trim());
+    return a.includes(currentUser.member_id);
+  });
+} else if(activeMemberId!=='all'){
+  tasks=tasks.filter(t=>{
+    const a=String(t.assigned_to).split(',').map(s=>s.trim());
+    return a.includes(activeMemberId);
+  });
+}
   const s={overdue:tasks.filter(t=>t.status==='overdue'),todo:tasks.filter(t=>t.status==='todo'),done:tasks.filter(t=>t.status==='done')};
   if(activeFilter==='todo'){s.overdue=[];s.done=[]}
   if(activeFilter==='overdue'){s.todo=[];s.done=[]}
@@ -585,7 +584,7 @@ function cardHTML(t){
   const aNames=aIds.map(id=>{const m=allMembers.find(m=>m.member_id===id);return m?m.name:id});
   const creator=allMembers.find(m=>m.member_id===t.created_by);
   const cName=creator?creator.name:'';
-  const isCreatorView=viewMode==='mine'&&!aIds.includes(currentUser.member_id)&&t.created_by===currentUser.member_id;
+  const isCreatorView=false;
   const dlTag=t.deadline_date?`<span class="tag ${t.status==='overdue'?'tag-overdue':'tag-deadline'}">${t.status==='overdue'?'逾期 ':''}${t.deadline_date}</span>`:'';
   const srcTag=t.source==='rule'?`<span class="tag tag-rule">規則</span>`:t.source==='recurrence'?`<span class="tag tag-recur">例行</span>`:t.source!=='manual'?`<span class="tag tag-source">${t.source}</span>`:'';
   const cTag=cName&&!aIds.includes(t.created_by)?`<span class="tag tag-creator">by ${esc(cName)}</span>`:'';
